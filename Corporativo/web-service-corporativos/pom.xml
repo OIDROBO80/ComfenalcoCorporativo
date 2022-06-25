@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>co.com.smartfit</groupId>
+	<artifactId>CorporativosSmartFit</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>WebServices</module>
+		<module>App</module>
+		<module>admin</module>
+	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>co.com.smartfit</groupId>
+				<artifactId>WebServices</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>co.com.smartfit</groupId>
+				<artifactId>App</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>co.com.smartfit</groupId>
+				<artifactId>admin</artifactId>
+				<version>1.0.0</version>
+				<type>war</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- The WildFly plugin deploys your ear to a local JBoss AS container -->
+				<!-- Due to Maven's lack of intelligence with EARs we need to configure 
+					the wildfly maven plugin to skip deployment for all modules. We then enable 
+					it specifically in the ear module. -->
+				<plugin>
+					<groupId>org.wildfly.plugins</groupId>
+					<artifactId>wildfly-maven-plugin</artifactId>
+					<version>1.0.2.Final</version>
+					<inherited>true</inherited>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<inherited>true</inherited>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

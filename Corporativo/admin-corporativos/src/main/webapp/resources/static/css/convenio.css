@@ -1,0 +1,73 @@
+.margin-select {
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+header {
+    height: 125px;
+}
+
+.titleEmployees {
+    margin-bottom: 8px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.error {
+    border-color: #d61a38;
+    margin-bottom: 0;
+}
+
+.companies {
+    margin-top: 20px;
+}
+
+.data {
+    font-weight: 300;
+}
+
+.section-menu li {
+    cursor: pointer;
+}
+
+.download-data {
+    cursor: pointer;
+}
+
+.panel-heading {
+    position: relative
+}
+
+.panel-heading .download-data {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+._720kb-datepicker-calendar {
+    width: 240px;
+}
+
+.date-range {
+    padding: 15px 5px;
+}
+
+.table-employees {
+    height: auto;
+    overflow: scroll;
+    max-height: 300px;
+}
+
+.title-margin {
+    margin-top: 30px;
+}
+
+.bg-danger {
+    padding: 5px;
+    margin: 10px 10px 0;
+    text-align: center;
+    border: 1px solid #eca6a6;
+}

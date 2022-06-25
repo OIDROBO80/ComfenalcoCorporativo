@@ -1,0 +1,87 @@
+package com.corporativos_smartfit.dao;
+
+
+import com.corporativos_smartfit.dto.ErrorGeneral;
+import com.corporativos_smartfit.entities.TipoDocumentoIdentidad;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TipoDocumentoIdentidadDao extends GenericDao<TipoDocumentoIdentidad> {
+
+	private static final Logger LOG = Logger.getLogger(TipoDocumentoIdentidadDao.class);
+	
+	public TipoDocumentoIdentidadDao() {
+		super(TipoDocumentoIdentidad.class);
+	}
+
+	public TipoDocumentoIdentidad obtenerTipoDocumentoPorCodigo(String codigo) {
+		LOG.info("Obteniendo la entidad TipoDocumentoIdentidad para el codigo "+codigo);
+		TipoDocumentoIdentidad tipoDocumento = null;
+		List<TipoDocumentoIdentidad> tiposDocumento = new ArrayList<TipoDocumentoIdentidad>();
+		Session session = null;
+		String hqlQuery = "from TipoDocumentoIdentidad t where t.codigo = :codigo";
+		try {
+			session = this.getSession();
+			Query query = session.createQuery(hqlQuery);
+			query.setParameter("codigo", codigo);
+			tiposDocumento = query.getResultList();
+			session.getTransaction().commit();
+		}
+		catch (Exception e) {
+			System.err.println("Error en TipoDocumentoIdentidadDao " + e.toString());
+			e.printStackTrace();
+		} 
+		finally {
+			try {
+				this.closeSession(session);
+			}
+			catch (Exception e) {
+				System.err.println("Error en TipoDocumentoIdentidadDao al cerrar sesion " + e.toString());
+			}
+		}
+		if (tiposDocumento.size() > 0) {
+			tipoDocumento = tiposDocumento.get(0);
+		}
+		LOG.info("El valor recuperado es:"+tipoDocumento.getCodigo()+" con la descripcion "+tipoDocumento.getDescripcion());
+		return tipoDocumento;
+	}
+	
+	public TipoDocumentoIdentidad obtenerTipoDocumentoPorId(int codigoId) throws ErrorGeneral {
+		LOG.info("Obtaining Document type to Id: "+codigoId);
+		TipoDocumentoIdentidad tipoDocumento = null;
+		List<TipoDocumentoIdentidad> tiposDocumento = new ArrayList<TipoDocumentoIdentidad>();
+
+		Session session = null;
+
+		String hqlQuery = "from TipoDocumentoIdentidad t where t.id = :id";
+
+		try {
+			session = this.getSession();
+			Query query = session.createQuery(hqlQuery);
+			query.setParameter("id", codigoId);
+			tiposDocumento = query.getResultList();
+			session.getTransaction().commit();
+		}
+		catch (Exception e) {
+			throw new ErrorGeneral(500,"Error querying identification type with id: "+codigoId);
+		} 
+		finally {
+
+				this.closeSession(session);
+		}
+		if (tiposDocumento.size() > 0) {
+			tipoDocumento = tiposDocumento.get(0);
+
+		}  else
+		{
+			throw new ErrorGeneral(404,"There is no type of identification associated with id: "+codigoId);
+		}
+		LOG.info("The document is : "+tipoDocumento.getDescripcion());
+		return tipoDocumento;
+	}
+
+}

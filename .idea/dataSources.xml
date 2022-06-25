@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="co:com:smartfit:web:configuration:hibernate.cfg.xml/Hibernate" uuid="ed65aec1-7a5a-4927-a4c0-0a17b2406f52">
+      <driver-ref>mysql</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+/Users/oscarjavieridrobolopez/Desktop/Technoapes/ProyectosVersionados/ComfenalcoCorporativo/Corporativo/admin-corporativos/src/main/resources/co/com/smartfit/web/configuration/hibernate.cfg.xml</remarks>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/dbcorposmartfit</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

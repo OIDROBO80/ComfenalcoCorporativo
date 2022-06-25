@@ -1,0 +1,48 @@
+.middleSliderWrap {
+    .middleSlider {
+        .slick-next {
+            right: -37px;
+            transform: scale(0.5);
+        }
+        .slick-prev {
+            left: -37px;
+            transform: scale(0.5);
+        }
+    }
+}
+
+.dudasMainWrap {
+    .dudasTitleWrap {
+        .titleWrap {
+            width: 290px;
+            .dudas {
+                font-size: 60px;
+            }
+            .resuelve {
+                font-size: 50px;
+            }
+        }
+        .subtitleWrap {
+            .conoce,
+            .saber {
+                font-size: 20px;
+            }
+        }
+    }
+    .dudasWrap {
+        margin: 10px auto;
+        .dudasWrapper {
+            .duda {
+                margin: 20px auto;
+                .dudaTitle {
+                    font-size: 17px;
+                }
+                .dudaRespWrap {
+                    .dudaResp {
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,56 @@
+<b:beans xmlns="http://www.springframework.org/schema/security" xmlns:b="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http auto-config="true" use-expressions="true">
+        <!-- enable csrf protection -->
+        <csrf disabled="false" />
+        <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/convenios**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/gestionar**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
+        <intercept-url pattern="/mensaje**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP')" />
+        <intercept-url pattern="/j_spring_security_logout**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
+        <intercept-url pattern="/asignados**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/no-asignados**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/find-by-sede**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/find-by-documento**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/find-by-codigo**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/find_afiliado/**" access="hasRole('ROLE_ADMIN')" />
+
+        <intercept-url pattern="/home**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
+        <intercept-url pattern="/corporativo**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="listar_empleados" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="activar_plan_empleado" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="cambiar_contrasena" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="/administrativo**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="listar_convenios" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="listar_empresas" access="hasRole('ROLE_ADMIN')" />
+
+        <!-- accesos para dministrador de convenios de empresa (corporativos) -->
+        <intercept-url pattern="/convenioAdmin**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="/crearConvenioEmpresa**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP')" />
+        <intercept-url pattern="/obtenerConvenioEmpresas**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="/obtenerConvenioAfiliados**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="crear_empresa_convenio" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="listar_empleados_por_empresa_convenio" access="hasAnyRole('ROLE_CORP','ROLE_CORP2')" />
+        <intercept-url pattern="listar_empresas_convenio" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="otro" access="hasRole('ROLE_CORP2')" />
+        <intercept-url pattern="/mensaje_convenio**" access="hasRole('ROLE_CORP')" />
+
+        <!-- access denied page -->
+        <access-denied-handler error-page="/403" />
+
+        <form-login login-page="/login" default-target-url="/home" authentication-failure-url="/login?error" username-parameter="username"
+            password-parameter="password" />
+        <logout logout-success-url="/login?logout" />
+        <!-- <session-management invalid-session-url="/login" /> -->
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="dataSource" users-by-username-query="select username, password, enabled from users where username=?"
+                authorities-by-username-query="select username, role from user_roles where username =?  " />
+        </authentication-provider>
+    </authentication-manager>
+
+</b:beans>

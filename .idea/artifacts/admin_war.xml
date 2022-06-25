@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="admin:war">
+    <output-path>$PROJECT_DIR$/Corporativo/admin-corporativos/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>false</exploded>
+        <module>admin</module>
+        <packaging>war</packaging>
+        <unpackNestedArchives>false</unpackNestedArchives>
+      </options>
+    </properties>
+    <root id="archive" name="Admin.war">
+      <element id="artifact" artifact-name="admin:war exploded" />
+    </root>
+  </artifact>
+</component>

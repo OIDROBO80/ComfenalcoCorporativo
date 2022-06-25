@@ -1,0 +1,23 @@
+
+// Esta hoja contiene los enlaces a las hojas de estilos definidas particularmente para los media queries
+
+
+@media screen and (max-width: 1023px ) {
+	@import "header/media_1023";
+	@import "section_home/media_1023";
+	@import "footer/media_1023";
+	
+}
+
+@media screen and (max-width: 750px) {
+	@import "header/media_750";
+	@import "section_home/media_750";
+	@import "footer/media_750";
+}
+
+
+@media screen and (max-width: 540px) {
+	@import "header/media_540";
+	@import "section_home/media_540";
+	@import "footer/media_540";
+}

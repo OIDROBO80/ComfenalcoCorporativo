@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12-may-2017 13:55:34 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="co.com.smartfit.web.entities.Users" table="users">
+        <id name="idUser" type="java.lang.Integer">
+            <column name="id_user" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="userRoles" class="co.com.smartfit.web.entities.UserRoles" fetch="select">
+            <column name="id_user_role" not-null="true" />
+        </many-to-one>
+        <property name="username" type="string">
+            <column name="username" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" length="45" not-null="true" />
+        </property>
+        <property name="enabled" type="byte">
+            <column name="enabled" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

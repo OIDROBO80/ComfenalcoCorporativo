@@ -1,0 +1,36 @@
+.dudasMainWrap {
+    .dudasTitleWrap {
+        .titleWrap {
+            width: 640px;
+            .dudas {
+                font-size: 100px;
+            }
+        }
+    }
+    .dudasWrap {
+        margin: 40px auto;
+        .dudasWrapper {
+            width: 90%;
+            margin: 0 5%;
+            .duda {
+                .dudaTitle {
+                    font-size: 25px;
+                }
+                .dudaRespWrap {
+                    .dudaResp {
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.middleSliderWrap {
+	.middleSlider {
+		.middleSliderWrapper {
+			width: 80%;
+			margin: 0 10% 50px;
+        }
+    }
+}
