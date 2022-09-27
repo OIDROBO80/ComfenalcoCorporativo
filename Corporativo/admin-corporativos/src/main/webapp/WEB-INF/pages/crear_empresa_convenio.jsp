@@ -56,6 +56,128 @@ crossorigin="anonymous">
 		</div>
     </section>
     <section class="generic-container">
+	<div class="col-md-12">
+		<div class="panel panel-default" id="divCrearPlan">
+			<div class="panel-heading">
+				<span class="lead">Crear Plan</span>
+			</div>
+			<div class="panel-body">
+				<form class="form_crear_plan" role="form" name="formCrearPlan">
+					<div class="row">
+						<div class="form-group col-xs-12 col-sm-6">
+							<label for="nombrePlan">Nombre Plan</label>
+							<input type="text"
+								   data-ng-pattern="/^[a-zA-ZáéíóúÁÉÍÓÚÑñ0-9\s]+$/"
+								   class="form-control" id="nombrePlan" name="nombrePlan"
+								   placeholder="Ingresa el Nombre Plan"
+								   data-ng-model='adminCtrl.formCrearPlan.nombrePlan' required
+								   data-ng-class='{ error: formCrearPlan.nombrePlan.$dirty && formCrearPlan.nombrePlan.$invalid}'>
+							<span ng-show="formCrearPlan.nombrePlan.$dirty && formCrearEmp.nombrePlan.$invalid" style="opacity: 0.3;">Descripcion del plan</span>
+						</div>
+						<div class="form-group col-xs-12 col-sm-6">
+							<label for="dias">Dias</label>
+							<input type="text"
+								   data-ng-pattern="/^[0-9]{1,365}$/"
+								   class="form-control" id="dias" name="dias"
+								   placeholder="Ingresa el numero de dias por plan"
+								   data-ng-model='adminCtrl.formCrearPlan.dias' required
+								   data-ng-class='{ error: formCrearPlan.dias.$dirty && formCrearEmp.formCrearPlan.dias.$invalid}'>
+							<span ng-show="formCrearPlan.dias.$dirty && formCrearEmp.dias.$invalid" style="opacity: 0.3;">Valor numerico</span>
+						</div>
+					</div>
+					<div class="alert alert-warning" role="alert"
+						 data-ng-if="adminCtrl.errorCreatingPlan">
+						<h4 class="error_message">{{adminCtrl.errorCreatingPlan}}</h4>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary"
+								ng-disabled="formCrearPlan.$invalid || !adminCtrl.formCrearPlan.nombrePlan || !adminCtrl.formCrearPlan.dias"
+								ng-click="adminCtrl.createPlan()">Crear</button>
+					</div>
+					<div class="form-group col-xs-12">
+						<label class="titleEmployees">Lista de Planes</label>
+					</div>
+					<div data-ng-if="adminCtrl.listPlanes.length > 0" class="form-group col-xs-12 table-employees">
+						<table data-ng-if="adminCtrl.listPlanes.length > 0" class="table table-bordered">
+							<thead>
+							<tr>
+								<th>Nombre Plan</th>
+								<th>Periocidad</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr data-ng-repeat="listPlanes in adminCtrl.listPlanes">
+								<td>{{listPlanes.nombre}}</td>
+								<td>{{listPlanes.periocidad}}</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+			<div class="panel panel-default" id="divAsignarPlan">
+				<div class="panel-heading">
+					<span class="lead">Asignar Plan</span>
+				</div>
+				<div class="panel-body">
+					<form class="form_asignar_plan" role="form" name="formAsignarPlan">
+						<div class="row">
+							<div class="form-group col-xs-12 col-sm-6">
+								<label for="planEmpresa">Empresa</label>
+								<select id="planEmpresa"
+										class="form-control margin-select" name="planEmpresa" placeholder="empresa" data-ng-model='adminCtrl.formAsignarPlan.planEmpresa' required
+										data-ng-class='{ error: formAsignarPlan.planEmpresa.$dirty && formAsignarPlan.planEmpresa.$invalid }'>
+									<option style="display:none" value="">Seleccione una empresa</option>
+									<option ng-repeat="listEmpresas in adminCtrl.listEmpresas" value="{{listEmpresas.idEmpresa}}">{{listEmpresas.razonSocial}}</option>
+								</select>
+								<span ng-show="formAsignarPlan.planEmpresa.$dirty && formAsignarPlan.planEmpresa.$invalid" style="opacity: 0.3;">Seleccione una empresa</span>
+							</div>
+							<div class="form-group col-xs-12 col-sm-6">
+								<label for="planAsignar">Asignar Plan</label>
+								<select id="planAsignar"
+										class="form-control margin-select" name="planAsignar" placeholder="planAsignar" data-ng-model='adminCtrl.formAsignarPlan.planAsignar' required
+										data-ng-class='{ error: formAsignarPlan.planAsignar.$dirty && formAsignarPlan.planAsignar.$invalid }'>
+									<option style="display:none" value="">Seleccione un plan</option>
+									<option ng-repeat="listPlanes in adminCtrl.listPlanes" value="{{listPlanes.id}}">{{listPlanes.nombre}}</option>
+								</select>
+								<span ng-show="formAsignarPlan.planAsignar.$dirty && formAsignarPlan.planAsignar.$invalid" style="opacity: 0.3;">Seleccione una plan</span>
+							</div>
+						</div>
+						<div class="alert alert-warning" role="alert"
+							 data-ng-if="adminCtrl.errorAsignandoPlanAEmpresa">
+							<h4 class="error_message">{{adminCtrl.errorAsignandoPlanAEmpresa}}</h4>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary"
+									ng-disabled="formAsignarPlan.$invalid || !adminCtrl.formAsignarPlan.planAsignar || !adminCtrl.formAsignarPlan.planEmpresa"
+									ng-click="adminCtrl.asignarPlanAEmpresa()">Asignar</button>
+						</div>
+						<div class="form-group col-xs-12">
+							<label class="titleEmployees">Lista de Planes Por Empresa</label>
+						</div>
+						<div data-ng-if="adminCtrl.listPlanesPorEmpresa.length > 0" class="form-group col-xs-12 table-employees">
+							<table data-ng-if="adminCtrl.listPlanesPorEmpresa.length > 0" class="table table-bordered">
+								<thead>
+								<tr>
+									<th>Empresa</th>
+									<th>Nombre de Plan</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr data-ng-repeat="listPlanesPorEmpresa in adminCtrl.listPlanesPorEmpresa">
+									<td>{{listPlanesPorEmpresa.nombreEmpresa}}</td>
+									<td>{{listPlanesPorEmpresa.nombrePlan}}</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
     <div class="col-md-12">
         <div class="panel panel-default" id="divCrearEmp">
             <div class="panel-heading">
@@ -143,7 +265,7 @@ crossorigin="anonymous">
 	                            class="form-control margin-select" name="membresia" placeholder="Membresía" data-ng-model='adminCtrl.formData.membresia' required
 	                            data-ng-class='{ error: formCrearEmp.membresia.$dirty && formCrearEmp.membresia.$invalid }'>
 		                            <option style="display:none" value="">Seleccione una opci&oacute;n</option>
-		                            <option ng-repeat="membresia in adminCtrl.membresias" value="{{membresia.id}}">{{membresia.nombre}}</option>
+		                            <option ng-repeat="membresia in adminCtrl.listMembresias" value="{{membresia.id}}">{{membresia.nombre}}</option>
 	                        </select>
 	                        <span ng-show="formCrearEmp.membresia.$dirty && formCrearEmp.membresia.$invalid" style="opacity: 0.3;">Seleccione una opción</span>
 	                    </div>
@@ -169,14 +291,24 @@ crossorigin="anonymous">
 	                    </div>
 	                </div>
                     <div class="row">
-						<div class="form-group col-xs-12 col-sm-6">
+						<!--div class="form-group col-xs-12 col-sm-6">
 	                        <label for="discountCodes">Códigos (csv)</label>
 	                        <input id="csvDiscountCodes" type="file" class="form-control" 
 	                        ng-model-instant onchange="angular.element(this).scope().adminCtrl.loadDiscountCodes()" required
 	                        data-ng-class='{ error: formCrearEmp.csvDiscountCodes.$dirty && formCrearEmp.csvDiscountCodes.$invalid }'/>
 	                        <span ng-show="formCrearEmp.csvDiscountCodes.$dirty && formCrearEmp.csvDiscountCodes.$invalid" style="opacity: 0.3;">Archivo en formato csv</span>
 	                        <span data-ng-if="adminCtrl.tableDataDiscountCodes.length > 0" class="">Se van a cargar {{adminCtrl.tableDataDiscountCodes.length}} códigos</span>
-	                    </div>
+	                    </div--!>
+						<div class="form-group col-xs-12 col-sm-6">
+							<label for="plan">Plan</label>
+							<select id="plan"
+									class="form-control margin-select" name="plan" placeholder="Plan" data-ng-model='adminCtrl.formData.plan' required
+									data-ng-class='{ error: formCrearEmp.plan.$dirty && formCrearEmp.plan.$invalid }'>
+								<option style="display:none" value="">Seleccione una opci&oacute;n</option>
+								<option ng-repeat="membresia in adminCtrl.tableDataPlanByEmpresa" value="{{membresia.id}}">{{membresia.nombrePlan}}</option>
+							</select>
+							<span ng-show="formCrearEmp.plan.$dirty && formCrearEmp.plan.$invalid" style="opacity: 0.3;">Seleccione una opción</span>
+						</div>
 	                    <div class="form-group col-xs-12 col-sm-6">
 	                        <label for="employees">Empleados (csv)</label>
 	                        <input id="csv" type="file" class="form-control" 

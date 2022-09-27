@@ -26,7 +26,7 @@ public class EmpresaAfiliado implements java.io.Serializable {
 	}
 
 	public EmpresaAfiliado(EmpresaEmpleador empresaEmpleador, TipoDocumentoIdentidad tipoDocumentoIdentidad,
-			String documentoNumero, String nombre, String email) {
+						   String documentoNumero, String nombre, String email) {
 		this.empresaEmpleador = empresaEmpleador;
 		this.tipoDocumentoIdentidad	 = tipoDocumentoIdentidad;
 		this.documentoNumero = documentoNumero;
@@ -35,8 +35,8 @@ public class EmpresaAfiliado implements java.io.Serializable {
 	}
 
 	public EmpresaAfiliado(EmpresaEmpleador empresaEmpleador, TipoDocumentoIdentidad tipoDocumentoIdentidad,
-			String documentoNumero, String nombre, String email, Character categoria, Date fechaCreacion,
-			Set empresaAfiliadoXCodigoDescuentos) {
+						   String documentoNumero, String nombre, String email, Character categoria, Date fechaCreacion,
+						   Set empresaAfiliadoXCodigoDescuentos) {
 		this.empresaEmpleador = empresaEmpleador;
 		this.tipoDocumentoIdentidad = tipoDocumentoIdentidad;
 		this.documentoNumero = documentoNumero;

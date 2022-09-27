@@ -48,7 +48,7 @@
             csvProvider.loadCsvAsString(fileInput).then(function(result) {
             	let numColum = result[0].split(',').length;
             	if( numColum != 1 ) {
-            		alert('Error en la cantidad de columnas del archivo.');
+            		alert('Error en la cantidad de columnas del archivo');
             		vm.tableDataDiscountCodes = '';
             		vm.formData.codigosCsv = '';
             		fileInput.value = '';

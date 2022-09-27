@@ -2,9 +2,12 @@ package com.corporativos_smartfit.dao;
 
 
 import com.corporativos_smartfit.dto.ErrorGeneral;
+import com.corporativos_smartfit.entities.Membresia;
 import com.corporativos_smartfit.entities.TipoDocumentoIdentidad;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 import javax.persistence.Query;
 import java.util.ArrayList;
@@ -49,39 +52,15 @@ public class TipoDocumentoIdentidadDao extends GenericDao<TipoDocumentoIdentidad
 		LOG.info("El valor recuperado es:"+tipoDocumento.getCodigo()+" con la descripcion "+tipoDocumento.getDescripcion());
 		return tipoDocumento;
 	}
-	
-	public TipoDocumentoIdentidad obtenerTipoDocumentoPorId(int codigoId) throws ErrorGeneral {
-		LOG.info("Obtaining Document type to Id: "+codigoId);
-		TipoDocumentoIdentidad tipoDocumento = null;
-		List<TipoDocumentoIdentidad> tiposDocumento = new ArrayList<TipoDocumentoIdentidad>();
 
-		Session session = null;
-
-		String hqlQuery = "from TipoDocumentoIdentidad t where t.id = :id";
-
-		try {
-			session = this.getSession();
-			Query query = session.createQuery(hqlQuery);
-			query.setParameter("id", codigoId);
-			tiposDocumento = query.getResultList();
-			session.getTransaction().commit();
+	public TipoDocumentoIdentidad obtenerTipoDocumentoPorId(int id) throws ErrorGeneral {
+		Criterion IdFk = Restrictions.eq("id", id);
+		this.filters.add(IdFk);
+		List<TipoDocumentoIdentidad> listTipoDocumentoIdentidad =this.getRegisters("id");
+		if (listTipoDocumentoIdentidad.size() >0) {
+			return listTipoDocumentoIdentidad.get(0);
+		} else {
+			throw new ErrorGeneral(404,"There is no type of identification associated with id: "+id);
 		}
-		catch (Exception e) {
-			throw new ErrorGeneral(500,"Error querying identification type with id: "+codigoId);
-		} 
-		finally {
-
-				this.closeSession(session);
-		}
-		if (tiposDocumento.size() > 0) {
-			tipoDocumento = tiposDocumento.get(0);
-
-		}  else
-		{
-			throw new ErrorGeneral(404,"There is no type of identification associated with id: "+codigoId);
-		}
-		LOG.info("The document is : "+tipoDocumento.getDescripcion());
-		return tipoDocumento;
 	}
-
 }

@@ -166,6 +166,7 @@ crossorigin="anonymous">
                     <h4 class="modal-title">Importar empleados</h4>
                 </div>
                 <div class="modal-body">
+                    <a href="https://logincorp.smartfitcolombia.com/assets/plantillas_widfly/empleados_estructura_cargue.csv" class="form-control btn btn-link" download="download">Descargar formato</a>
                     <form class="form_crear_empresa" role="form" name="formEmpleImport" id="formEmpleImport" method="post" action="procesarCsvConvenioAfiliados">
                         <div class="row">
 	                        <div class="form-group col-md-12">
@@ -274,6 +275,7 @@ crossorigin="anonymous">
                     <h4 class="modal-title">Importar códigos</h4>
                 </div>
                 <div class="modal-body">
+                    <a href="https://logincorp.smartfitcolombia.com/assets/plantillas_widfly/codigos_estructura_cargue.csv" class="form-control btn btn-link" download="download">Descargar formato</a>
                     <form class="form_crear_empresa" role="form" name="formCodImport" id="formCodImport" method="post" action="procesarCsvConvenioCodigosDescuento">
                         <div class="row">
 	                        <div class="form-group col-md-12">

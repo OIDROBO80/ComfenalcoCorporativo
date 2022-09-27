@@ -12,9 +12,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import co.com.smartfit.web.entities.CodigoDescuento;
 import co.com.smartfit.web.entities.EmpresaAfiliado;
-import co.com.smartfit.web.entities.EmpresaEmpleador;
 
 /**
  * DAO para obtener la entidad EmpresaAfiliado de BD

@@ -3,10 +3,12 @@ package co.com.smartfit.web.dao;
 
 // Generated 15/09/2017 01:45:54 PM by Hibernate Tools 5.1.0.Alpha1
 
+import java.util.ArrayList;
 import java.util.List;
 
+import co.com.smartfit.web.entities.EmpresaEmpleadorXPlan;
+import com.corporativos_smartfit.dto.ErrorGeneral;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.NOPLogger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
@@ -23,63 +25,39 @@ import co.com.smartfit.web.entities.CodigoDescuento;
 public class CodigoDescuentoDao extends GenericDao<CodigoDescuento> {
 
     private static final Logger LOG = Logger.getLogger(CodigoDescuentoDao.class);
+    private  EmpresaEmpleadorXPlanDao empresaEmpleadorXPlanDao;
 
     public CodigoDescuentoDao() {
         super(CodigoDescuento.class);
+        empresaEmpleadorXPlanDao = new EmpresaEmpleadorXPlanDao();
     }
-    
-    /**
-     * Metodo que permite obtener entidades de CodigoDescuento que pertenecen a una EmpresaEmpleador
-     * 
-     * @param {disponibles} indica si se desea obtener los codigos disponibles
-     * @param {idEmpresaEmpleador} Identificador de la entidad de EmpresaEmpleador
-     * @return {List<CodigoDescuento>} codigos de descuento disponibles o no en base de datos (según el criterio)
-     * @throws Exception
-     */
-	@SuppressWarnings("unchecked")
-	public List<CodigoDescuento> obtenerCodigosDisponiblesPorEmpresaEmpleador(boolean disponibles, int idEmpresaEmpleador) throws Exception {
+
+    public List<CodigoDescuento> obtenerCodigosDisponiblesPorPlan(boolean disponibles, int idEmpresaPlan) throws ErrorGeneral {
+        String message =disponibles ? "Obteniendo listado de codigos disponibles para el IdEmpresaEmpleadorPlan:"+idEmpresaPlan :
+                "Obteniendo listado de codigos NO disponibles para el IdEmpresaEmpleadorPlan:"+idEmpresaPlan;
+        Criterion empresaEmpleadorFk = Restrictions.eq("idEmpresaPlan", idEmpresaPlan);
+        Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
+        if (!disponibles) {
+            // negamos el criterio de no asignado (si asignado) en caso de que se hallan solictado lo contrario
+            noAsignado = Restrictions.not(noAsignado);
+        }
+        this.filters.add(noAsignado);
+        List<CodigoDescuento> codigosDescuento = this.getRegisters("id");
+        return codigosDescuento;
+    }
+
+    public List<CodigoDescuento> obtenerCodigosDisponiblesPorEmpresaEmpleador(boolean disponibles, int idEmpresaEmpleador) throws ErrorGeneral {
         String message =disponibles ? "Obteniendo listado de codigos disponibles para el idEmpresaEmpleador:"+idEmpresaEmpleador :
                 "Obteniendo listado de codigos NO disponibles para el idEmpresaEmpleador:"+idEmpresaEmpleador;
         LOG.info(message);
-        List<CodigoDescuento> codigosDescuento = null;
-        // obtenemos la session
-        Session session = null;
-        try {
-            session = this.getSession();
-            // indicamos los criterios de busqueda (criteria query)
-            @SuppressWarnings("deprecation")
-			Criteria criteria = session.createCriteria(CodigoDescuento.class);
-            // restricciones
-            Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
-            if (!disponibles) {
-                // negamos el criterio de no asignado (si asignado) en caso de que se hallan solictado lo contrario
-                noAsignado = Restrictions.not(noAsignado);
-            }
-            // agregamos criterio de clave foranea
-            Criterion empresaEmpleadorFk = Restrictions.eq("empresaEmpleador.id", idEmpresaEmpleador);
-            criteria.add(noAsignado);
-            criteria.add(empresaEmpleadorFk);
-            // obtenemos la lista segun los criterios dados
-            codigosDescuento = criteria.list();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            throw new Exception("Error en DAO, obtener codigos disponibles." + "\n" + e.toString(), e);
-        } finally {
-            // cerramos la sesión de BD
-            this.closeSession(session);
+        List<EmpresaEmpleadorXPlan> ListEmpresaEmpleadorXPlan = empresaEmpleadorXPlanDao.getEmpresaEmpleadorXPlanByIdEmpEmpleador(idEmpresaEmpleador);
+        List<CodigoDescuento> allListCodigoDescuento = new ArrayList<CodigoDescuento>();
+        for (EmpresaEmpleadorXPlan empresaEmpleadorXPlan: ListEmpresaEmpleadorXPlan) {
+            allListCodigoDescuento.addAll(this.obtenerCodigosDisponiblesPorPlan(disponibles,empresaEmpleadorXPlan.getId()));
         }
-        message = disponibles ? "se tienen "+codigosDescuento.size()+" codigos disponibles" :
-                "se tienen "+codigosDescuento.size()+" codigos No disponibles";
-        LOG.info(message);
-        return codigosDescuento;
+        return allListCodigoDescuento;
     }
-	
-	/**
-	 * Método que permite obtener un codigo de descuento por medio del filtro de codigo
-	 * @param codigo
-	 * @return
-	 * @throws Exception
-	 */
+
 	public CodigoDescuento obtenerCodigoDescuentoPorCodigo(String codigo) throws Exception {
         LOG.info("Obteniendo codigos de descuento");
         CodigoDescuento codigosDescuento = null;
@@ -108,6 +86,4 @@ public class CodigoDescuentoDao extends GenericDao<CodigoDescuento> {
         return codigosDescuento;
     }
 	
-	
-    
 }

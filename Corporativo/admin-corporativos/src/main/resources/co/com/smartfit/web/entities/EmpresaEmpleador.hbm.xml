@@ -8,14 +8,17 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="membresia" class="co.com.smartfit.web.entities.Membresia" fetch="select">
+        <!--many-to-one name="membresia" class="co.com.smartfit.web.entities.Membresia" fetch="select">
             <column name="membresia" not-null="true" />
-        </many-to-one>
-        <many-to-one name="tipoDocumentoIdentidad" class="co.com.smartfit.web.entities.TipoDocumentoIdentidad" fetch="select">
+        </many-to-one-->
+        <!--many-to-one name="tipoDocumentoIdentidad" class="co.com.smartfit.web.entities.TipoDocumentoIdentidad" fetch="select">
             <column name="documento_tipo" not-null="true" />
-        </many-to-one>
+        </many-to-one-->
         <property name="razonSocial" type="string">
             <column name="razon_social" length="120" not-null="true" />
+        </property>
+        <property name="documentoTipo" type="java.lang.Integer">
+            <column name="documento_tipo"  not-null="true" />
         </property>
         <property name="documentoNumero" type="string">
             <column name="documento_numero" length="20" not-null="true" />
@@ -35,24 +38,26 @@
         <property name="fechaCreacion" type="timestamp">
             <column name="fecha_creacion" length="19" not-null="true" />
         </property>
+        <property name="idMembresia" type="java.lang.Integer">
+            <column name="membresia" not-null="true" />
+        </property>
         <property name="logo" type="string">
             <column name="logo" length="200" not-null="true" />
         </property>
         <property name="textoEmail" type="string">
             <column name="textoEmail" length="254" not-null="true" />
         </property>
-        
-        <set name="empresaAfiliados" table="empresa_afiliado" inverse="true" lazy="true" fetch="select">
+        <!--set name="empresaAfiliados" table="empresa_afiliado" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="empresa_empleador" not-null="true" />
             </key>
             <one-to-many class="co.com.smartfit.web.entities.EmpresaAfiliado" />
-        </set>
-        <set name="codigoDescuento" table="codigo_descuento" inverse="true" lazy="true" fetch="select">
+        </set-->
+        <!--set name="codigoDescuento" table="codigo_descuento" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="empresa_empleador" not-null="true" />
             </key>
             <one-to-many class="co.com.smartfit.web.entities.CodigoDescuento" />
-        </set>
+        </set-->
     </class>
 </hibernate-mapping>

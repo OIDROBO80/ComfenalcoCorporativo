@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class AffiliateQueryService extends AffiliateService {
     private AffiliateDocumentRequest affiliateDocumentRequest;
+
     public AffiliateQueryService(AffiliateDocumentRequest affiliateDocumentRequest) {
         super();
         this.affiliateDocumentRequest=affiliateDocumentRequest;
@@ -42,7 +43,7 @@ public class AffiliateQueryService extends AffiliateService {
             responseCodeQuery.setMessage("Descripcion del Ultimo codigo asignado");
             responseCodeQuery.setFechaAsignacion(lastEmpresaAfiliadoXCodigoDescuentoAsignado.getFechaAsignacion().toString());
             responseCodeQuery.setCode(lastCodigoDescuentoAsignado.getCodigo());
-            responseCodeQuery.setPeriodicidad(lastCodigoDescuentoAsignado.getPeriodicidad());
+            responseCodeQuery.setPeriodicidad(lastCodigoDescuentoAsignado.getEmpresaEmpleadorXPlan().getPlan().getNombre());
         }
         return responseCodeQuery;
     }

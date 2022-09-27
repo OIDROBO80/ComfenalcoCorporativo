@@ -32,5 +32,6 @@
             </key>
             <one-to-many class="com.corporativos_smartfit.entities.EmpresaAfiliadoXCodigoDescuento" />
         </set>
+
     </class>
 </hibernate-mapping>

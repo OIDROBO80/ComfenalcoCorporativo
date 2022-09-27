@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 12-may-2017 13:55:34 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.corporativos_smartfit.entities.Planes" table="planes" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" unique="true" not-null="true"/>
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="java.lang.String">
+            <column name="nombre" length="45" not-null="true"  />
+        </property>
+        <property name="periocidad" type="java.lang.Integer">
+            <column name="periocidad" not-null="true"/>
+        </property>
+        <property name="diasValidacion" type="java.lang.Integer">
+            <column name="dias_validacion" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

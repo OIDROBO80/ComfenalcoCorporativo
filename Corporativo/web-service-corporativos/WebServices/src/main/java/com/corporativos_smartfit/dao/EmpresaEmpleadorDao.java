@@ -63,4 +63,31 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
         LOG.info("Get the named entity: "+empresaEmpleador.getRazonSocial());
         return empresaEmpleador;
     }
+
+    public EmpresaEmpleador obtenerEmpresaEmpleadorPorId(int id) throws ErrorGeneral {
+        LOG.info("Obteniendo Empresa Empleador por Id: "+id);
+        EmpresaEmpleador empresaEmpleador = new EmpresaEmpleador();
+        Session session = null;
+        try {
+            session = this.getSession();
+            // indicamos los criterios de busqueda (criteria query)
+            Criteria criteria = session.createCriteria(EmpresaEmpleador.class);
+            // restricciones
+            Criterion idFk = Restrictions.eq("id", id);
+            // agregamos criterio de clave foranea
+            criteria.add(idFk);
+            // obtenemos la lista segun los criterios dados
+            Object resUnique = criteria.uniqueResult();
+            empresaEmpleador = (null != resUnique) ? (EmpresaEmpleador) criteria.uniqueResult() : null;
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ErrorGeneral(500,"Error Obteniendo Empresa Empleador :"+id);
+        } finally {
+            // cerramos la sesión de BD
+            this.closeSession(session);
+        }
+        return empresaEmpleador;
+    }
+
 }

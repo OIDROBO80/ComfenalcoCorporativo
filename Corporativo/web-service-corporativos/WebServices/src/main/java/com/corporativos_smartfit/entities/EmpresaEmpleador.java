@@ -1,5 +1,9 @@
 package com.corporativos_smartfit.entities;
 
+import com.corporativos_smartfit.dao.MembresiaDao;
+import com.corporativos_smartfit.dao.TipoDocumentoIdentidadDao;
+import com.corporativos_smartfit.dto.ErrorGeneral;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,29 +14,36 @@ import java.util.Set;
 public class EmpresaEmpleador implements java.io.Serializable {
 
 	private Integer id;
-	private Membresia membresia;
-	private TipoDocumentoIdentidad tipoDocumentoIdentidad;
 	private String razonSocial;
+	private Integer documentoTipo;
 	private String documentoNumero;
 	private String telefono;
 	private String email;
 	private boolean activa;
 	private String representanteNombre;
 	private Date fechaCreacion;
+	private Integer idMembresia;
 	private String logo;
 	private String textoEmail;
+
+	private MembresiaDao membresiaDao = new MembresiaDao();
+	private TipoDocumentoIdentidadDao tipoDocumentoIdentidadDao = new TipoDocumentoIdentidadDao();
+
+
+	private Membresia membresia;
+	private TipoDocumentoIdentidad tipoDocumentoIdentidad;
+	/*private TipoDocumentoIdentidad tipoDocumentoIdentidad;
 	private Set empresaAfiliados = new HashSet(0);
 	private Set codigoDescuento = new HashSet(0);
-
+	private Set empresaEmpleadorXPlan = new HashSet(0);
+	*/
 	public EmpresaEmpleador() {
 		super();
 	}
 
 	public EmpresaEmpleador(Membresia membresia, TipoDocumentoIdentidad tipoDocumentoIdentidad,
 			String razonSocial, String documentoNumero, String telefono, String email, boolean activa,
-			Date fechaCreacion, String logo, String textoEmail) {
-		this.membresia = membresia;
-		this.tipoDocumentoIdentidad = tipoDocumentoIdentidad;
+			Date fechaCreacion, String logo, String textoEmail,Integer documentoTipo,Integer idMembresia) {
 		this.razonSocial = razonSocial;
 		this.documentoNumero = documentoNumero;
 		this.telefono = telefono;
@@ -41,13 +52,17 @@ public class EmpresaEmpleador implements java.io.Serializable {
 		this.fechaCreacion = fechaCreacion;
 		this.logo = logo;
 		this.textoEmail = textoEmail;
-	}
-
-	public EmpresaEmpleador(Membresia membresia, TipoDocumentoIdentidad tipoDocumentoIdentidad,
-			String razonSocial, String documentoNumero, String telefono, String email, boolean activa,
-			String representanteNombre, Date fechaCreacion, String logo, String textoEmail, Set empresaAfiliados, Set codigoDescuento) {
+		this.documentoTipo = documentoTipo;
+		this.idMembresia = idMembresia;
 		this.membresia = membresia;
 		this.tipoDocumentoIdentidad = tipoDocumentoIdentidad;
+	}
+
+	public EmpresaEmpleador(Membresia membresia,
+			String razonSocial, String documentoNumero, String telefono, String email, boolean activa,
+			String representanteNombre, Date fechaCreacion, String logo, String textoEmail
+			) {
+		this.membresia = membresia;
 		this.razonSocial = razonSocial;
 		this.documentoNumero = documentoNumero;
 		this.telefono = telefono;
@@ -55,45 +70,35 @@ public class EmpresaEmpleador implements java.io.Serializable {
 		this.activa = activa;
 		this.representanteNombre = representanteNombre;
 		this.fechaCreacion = fechaCreacion;
-		this.empresaAfiliados = empresaAfiliados;
-		this.codigoDescuento = codigoDescuento;
 		this.logo = logo;
 	}
 
 	public Integer getId() {
-		return this.id;
+		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Membresia getMembresia() {
-		return this.membresia;
-	}
-
-	public void setMembresia(Membresia membresia) {
-		this.membresia = membresia;
-	}
-
-	public TipoDocumentoIdentidad getTipoDocumentoIdentidad() {
-		return this.tipoDocumentoIdentidad;
-	}
-
-	public void setTipoDocumentoIdentidad(TipoDocumentoIdentidad tipoDocumentoIdentidad) {
-		this.tipoDocumentoIdentidad = tipoDocumentoIdentidad;
-	}
-
 	public String getRazonSocial() {
-		return this.razonSocial;
+		return razonSocial;
 	}
 
 	public void setRazonSocial(String razonSocial) {
 		this.razonSocial = razonSocial;
 	}
 
+	public Integer getDocumentoTipo() {
+		return documentoTipo;
+	}
+
+	public void setDocumentoTipo(Integer documentoTipo) {
+		this.documentoTipo = documentoTipo;
+	}
+
 	public String getDocumentoNumero() {
-		return this.documentoNumero;
+		return documentoNumero;
 	}
 
 	public void setDocumentoNumero(String documentoNumero) {
@@ -101,7 +106,7 @@ public class EmpresaEmpleador implements java.io.Serializable {
 	}
 
 	public String getTelefono() {
-		return this.telefono;
+		return telefono;
 	}
 
 	public void setTelefono(String telefono) {
@@ -109,7 +114,7 @@ public class EmpresaEmpleador implements java.io.Serializable {
 	}
 
 	public String getEmail() {
-		return this.email;
+		return email;
 	}
 
 	public void setEmail(String email) {
@@ -117,7 +122,7 @@ public class EmpresaEmpleador implements java.io.Serializable {
 	}
 
 	public boolean isActiva() {
-		return this.activa;
+		return activa;
 	}
 
 	public void setActiva(boolean activa) {
@@ -125,7 +130,7 @@ public class EmpresaEmpleador implements java.io.Serializable {
 	}
 
 	public String getRepresentanteNombre() {
-		return this.representanteNombre;
+		return representanteNombre;
 	}
 
 	public void setRepresentanteNombre(String representanteNombre) {
@@ -133,11 +138,19 @@ public class EmpresaEmpleador implements java.io.Serializable {
 	}
 
 	public Date getFechaCreacion() {
-		return this.fechaCreacion;
+		return fechaCreacion;
 	}
 
 	public void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
+	}
+
+	public Integer getIdMembresia() {
+		return idMembresia;
+	}
+
+	public void setIdMembresia(Integer idMembresia) {
+		this.idMembresia = idMembresia;
 	}
 
 	public String getLogo() {
@@ -156,20 +169,27 @@ public class EmpresaEmpleador implements java.io.Serializable {
 		this.textoEmail = textoEmail;
 	}
 
-	public Set getEmpresaAfiliados() {
-		return this.empresaAfiliados;
+	public Membresia getMembresia() {
+		if (this.membresia == null) {
+			this.membresia= this.membresiaDao.getMembresiaPorId(this.idMembresia);
+		}
+		return this.membresia;
 	}
 
-	public void setEmpresaAfiliados(Set empresaAfiliados) {
-		this.empresaAfiliados = empresaAfiliados;
+	public void setMembresia(Membresia membresia) {
+		this.membresia = membresia;
 	}
 
-	public Set getCodigoDescuento() {
-		return codigoDescuento;
+	public TipoDocumentoIdentidad getTipoDocumentoIdentidad() throws ErrorGeneral {
+		if (this.tipoDocumentoIdentidad == null) {
+			this.tipoDocumentoIdentidad= this.tipoDocumentoIdentidadDao.obtenerTipoDocumentoPorId(this.documentoTipo);
+		}
+		return this.tipoDocumentoIdentidad;
 	}
 
-	public void setCodigoDescuento(Set codigoDescuento) {
-		this.codigoDescuento = codigoDescuento;
+	public void setTipoDocumentoIdentidad(TipoDocumentoIdentidad tipoDocumentoIdentidad) {
+		this.tipoDocumentoIdentidad = tipoDocumentoIdentidad;
 	}
+
 
 }

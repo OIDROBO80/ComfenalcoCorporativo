@@ -7,9 +7,6 @@ import java.util.Date;
  */
 public class EmpresaAfiliadoXCodigoDescuento implements java.io.Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private Integer id;
     private CodigoDescuento codigoDescuento;
@@ -27,7 +24,7 @@ public class EmpresaAfiliadoXCodigoDescuento implements java.io.Serializable {
     }
 
     public EmpresaAfiliadoXCodigoDescuento(CodigoDescuento codigoDescuento, EmpresaAfiliado empresaAfiliado, Boolean asignado,
-            Date fechaAsignacion) {
+                                           Date fechaAsignacion) {
         this.codigoDescuento = codigoDescuento;
         this.empresaAfiliado = empresaAfiliado;
         this.asignado = asignado;

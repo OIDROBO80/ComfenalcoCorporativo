@@ -83,8 +83,8 @@
             
             csvProvider.loadCsvAsString(fileInput).then(function(result) {
             	let numColum = result[0].split(',').length;
-            	if( numColum != 1 ) {
-            		alert('Error en la cantidad de columnas del archivo.');
+            	if( numColum != 2 ) {
+            		alert('Incluir unicamente las columnas codigo y plan ');
             		vm.formData.codigosCsv = '';
             		fileInput.value = '';
             		return;

@@ -26,5 +26,7 @@
         <mapping resource="Membresia.hbm.xml" />
         <mapping resource="CodigoDescuento.hbm.xml" />
         <mapping resource="EmpresaAfiliadoXCodigoDescuento.hbm.xml" />
+        <mapping resource="EmpresaEmpleadorXPlan.hbm.xml" />
+        <mapping resource="Planes.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

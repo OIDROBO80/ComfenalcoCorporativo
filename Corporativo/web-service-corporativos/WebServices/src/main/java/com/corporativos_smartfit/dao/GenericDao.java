@@ -2,9 +2,12 @@ package com.corporativos_smartfit.dao;
 
 
 import com.corporativos_smartfit.dto.ErrorGeneral;
+import com.corporativos_smartfit.entities.EmpresaEmpleadorXPlan;
 import com.corporativos_smartfit.util.HibernateSessionConfig;
+import com.sun.istack.Nullable;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.exception.ConstraintViolationException;
@@ -17,10 +20,12 @@ public class GenericDao<E> {
 
 	private Class<E> clazz;
 	private Session session;
+	protected ArrayList<Criterion>  filters;
 	private static HibernateSessionConfig hbSessionConfig = HibernateSessionConfig.getInstance();
 
 	public GenericDao(Class<E> clazzE) {
 		this.clazz = clazzE;
+		this.filters=new ArrayList<>();
 	}
 
 	public Session getHibernateSession() throws ErrorGeneral {
@@ -95,6 +100,7 @@ public class GenericDao<E> {
 		}
 		return listE;
 	}
+
 	public List<E> obtenerPaginadosOrdenados(int paginaTamano, int paginaNumero, String campoOrden) throws Exception {
 		List<E> listE = null;
 		int paginaNumAux = paginaNumero -1;
@@ -142,7 +148,7 @@ public class GenericDao<E> {
 	 * @return Session org.hibernate.Session session para acceso a BD
 	 * @throws Exception
 	 */
-	public Session getSession() throws Exception {
+	public Session getSession() throws ErrorGeneral {
 		try {
 			session = hbSessionConfig.getSession();
 			session.beginTransaction();
@@ -150,8 +156,8 @@ public class GenericDao<E> {
 		catch (Exception e) {
 			// cerramos la sesión de BD
 			hbSessionConfig.closeSession();
-			throw new Exception("Error en DAO, al obtener la sesion"+"\n" 
-					+ e.toString(), e);			
+			throw new ErrorGeneral(500,"Error en DAO, al obtener la sesion"+"\n"
+					+ e.getMessage());
 		}
 		return session;
 	}
@@ -230,16 +236,21 @@ public class GenericDao<E> {
 		return actualizado;
 	}
 		
-	public List<E> obtenerTodosEntidades() throws Exception {
+	public List<E> getRegisters(String fieldOrder) throws ErrorGeneral {
 		List<E> list = new ArrayList<>();
 		try {
 			Session sesion = this.getHibernateSession();
-			list = sesion.createCriteria(clazz).list();
+			Criteria criteria =  sesion.createCriteria(clazz);
+			for (Criterion filter:filters) {
+				criteria.add(filter);
+			}
+			criteria.addOrder(Order.asc(fieldOrder));
+			list = criteria.list();
 			sesion.getTransaction().commit();
 		}
 		catch (Exception e) {
-			throw new Exception("Error en DAO, al obtener las entidades."+"\n" 
-					+ e.toString(), e);
+			throw new ErrorGeneral(500,"Error en DAO, al obtener las entidades."+"\n"
+					+ e.getMessage());
 		}
 		finally {
 			// cerramos la sesión de BD

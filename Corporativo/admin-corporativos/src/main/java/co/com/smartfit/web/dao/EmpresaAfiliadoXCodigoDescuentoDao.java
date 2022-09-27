@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.corporativos_smartfit.dto.ErrorGeneral;
+import com.corporativos_smartfit.entities.EmpresaEmpleadorXPlan;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -107,13 +109,14 @@ public class EmpresaAfiliadoXCodigoDescuentoDao extends GenericDao<EmpresaAfilia
         } finally {
             this.closeSession(session);
         }
+        LOG.info("Existen : " + codigosDescuento.size() +"codigos asignados");
         return codigosDescuento;
     }
     
     
     /**
 	 * Método que permite obtener un codigo de descuento por medio del filtro de codigo
-	 * @param codigo
+	 * @param {codigo}
 	 * @return
 	 * @throws Exception
 	 */
@@ -145,5 +148,11 @@ public class EmpresaAfiliadoXCodigoDescuentoDao extends GenericDao<EmpresaAfilia
             this.closeSession(session);
         }
         return afiliadoXcodDesc;
+    }
+
+    public EmpresaAfiliadoXCodigoDescuento getEmpresaAfiliadoXCodigoDescuentoByCodigoDescuento(int codigoDescuento) throws ErrorGeneral {
+        Criterion idCodigoDescuento = Restrictions.eq("codigoDescuento", codigoDescuento);
+        this.filters.add(idCodigoDescuento);
+        return this.getRegisters("id").get(0);
     }
 }

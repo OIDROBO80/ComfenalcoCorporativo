@@ -26,5 +26,8 @@
         <mapping resource="co/com/smartfit/web/entities/Membresia.hbm.xml" />
         <mapping resource="co/com/smartfit/web/entities/CodigoDescuento.hbm.xml" />
         <mapping resource="co/com/smartfit/web/entities/EmpresaAfiliadoXCodigoDescuento.hbm.xml" />
+        <mapping resource="co/com/smartfit/web/entities/EmpresaEmpleadorXPlan.hbm.xml" />
+        <mapping resource="co/com/smartfit/web/entities/Planes.hbm.xml" />
+        <mapping resource="co/com/smartfit/web/entities/PlanesEmpresa.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

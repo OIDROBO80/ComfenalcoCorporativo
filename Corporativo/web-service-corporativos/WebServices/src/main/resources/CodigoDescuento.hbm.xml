@@ -14,17 +14,8 @@
         <property name="asignado" type="java.lang.Boolean">
             <column name="asignado" />
         </property>
-        <property name="periodicidad" type="string">
-            <column name="periodicidad" length="45" not-null="true" unique="true" />
+        <property name="idEmpresaPlan" type="java.lang.Integer">
+            <column name="id_empresa_plan" />
         </property>
-        <set name="empresaAfiliadoXCodigoDescuentos" table="empresa_afiliado_x_codigo_descuento" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="codigo_descuento" not-null="true" />
-            </key>
-            <one-to-many class="com.corporativos_smartfit.entities.EmpresaAfiliadoXCodigoDescuento" />
-        </set>
-        <many-to-one name="empresaEmpleador" class="com.corporativos_smartfit.entities.EmpresaEmpleador" fetch="select">
-            <column name="empresa_empleador" not-null="true" />
-        </many-to-one>
     </class>
 </hibernate-mapping>

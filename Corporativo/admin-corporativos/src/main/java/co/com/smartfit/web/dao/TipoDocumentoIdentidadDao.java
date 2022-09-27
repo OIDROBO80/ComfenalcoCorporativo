@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import co.com.smartfit.web.service.ConvenioAdminServiceImpl;
+import com.corporativos_smartfit.dto.ErrorGeneral;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -51,9 +52,9 @@ public class TipoDocumentoIdentidadDao extends GenericDao<TipoDocumentoIdentidad
 		LOG.info("El valor recuperado es:"+tipoDocumento.getCodigo()+" con la descripcion "+tipoDocumento.getDescripcion());
 		return tipoDocumento;
 	}
-	
-	public TipoDocumentoIdentidad obtenerTipoDocumentoPorId(int codigoId) {
 
+	public TipoDocumentoIdentidad obtenerTipoDocumentoPorId(int codigoId) throws ErrorGeneral {
+		LOG.info("Obtaining Document type to Id: "+codigoId);
 		TipoDocumentoIdentidad tipoDocumento = null;
 		List<TipoDocumentoIdentidad> tiposDocumento = new ArrayList<TipoDocumentoIdentidad>();
 
@@ -69,20 +70,20 @@ public class TipoDocumentoIdentidadDao extends GenericDao<TipoDocumentoIdentidad
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			System.err.println("Error en TipoDocumentoIdentidadDao " + e.toString());
-			e.printStackTrace();
-		} 
+			throw new ErrorGeneral(500,"Error querying identification type with id: "+codigoId);
+		}
 		finally {
-			try {
-				this.closeSession(session);
-			}
-			catch (Exception e) {
-				System.err.println("Error en TipoDocumentoIdentidadDao al cerrar sesion " + e.toString());
-			}
+
+			this.closeSession(session);
 		}
 		if (tiposDocumento.size() > 0) {
 			tipoDocumento = tiposDocumento.get(0);
+
+		}  else
+		{
+			throw new ErrorGeneral(404,"There is no type of identification associated with id: "+codigoId);
 		}
+		LOG.info("The document is : "+tipoDocumento.getDescripcion());
 		return tipoDocumento;
 	}
 

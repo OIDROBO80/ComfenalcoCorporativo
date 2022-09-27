@@ -16,20 +16,31 @@
     function crearEmpresaNominaController($scope, adminService, $location, csvProvider) {
         var vm = this;
         vm.formData = {};
-        vm.membresias = {};
+        vm.formCrearPlan ={}
+        vm.formAsignarPlan= {}
+        vm.listMembresias = {};
         vm.tableData = [];
+        vm.listPlanes = [];
+        vm.listEmpresas = [];
+        vm.listPlanesPorEmpresa = [];
         vm.tableDataDiscountCodes = [];
+        vm.errorCreatingPlan='';
+        vm.errorAsignandoPlanAEmpresa='';
 
         vm.logout = logout;
         vm.loadDiscountCodes = loadDiscountCodes;
         vm.loadEmployees = loadEmployees;
         vm.changeView = adminService.goPath;
         vm.imageUpload = imageUpload;
+        vm.createPlan = createPlan;
+        vm.asignarPlanAEmpresa=asignarPlanAEmpresa;
+        vm.getEmpresas =getEmpresas;
 
         onInit();
 
         function onInit() {
-            getMembresias();
+            getInformationInitialToCreateCompany();
+            getEmpresas();
         }
 
         function logout() {
@@ -47,7 +58,33 @@
                 fileInput.value = '';
             });
         }
-        
+
+        function createPlan() {
+            console.info('Dioclick',vm.formCrearPlan);
+            adminService.createPlan(vm.formCrearPlan.nombrePlan,vm.formCrearPlan.dias).then(function(response) {
+                if (response.codigoRespuesta === 200) {
+                    vm.errorCreatingPlan = '';
+                    vm.listPlanes = response.listPlanesActuales;
+                } else {
+                    vm.errorCreatingPlan=response.description;
+                }
+            });
+        }
+
+        function asignarPlanAEmpresa() {
+            console.info('Dioclick asignarPlanAEmpresa',vm.formAsignarPlan);
+            adminService.asignarPlanAEmpresa(vm.formAsignarPlan.planAsignar,vm.formAsignarPlan.planEmpresa).then(function(response) {
+                console.info('response asignarPlanAEmpresa ',response);
+                if (response.codigoRespuesta === 200) {
+                    vm.errorAsignandoPlanAEmpresa = '';
+                    vm.listPlanesPorEmpresa = response.listPlanesPorEmpresaActualizado;
+                } else {
+                    vm.errorAsignandoPlanAEmpresa=response.description;
+                }
+            });
+
+        }
+
         function loadDiscountCodes() {
             var fileInput = document.getElementById("csvDiscountCodes");
             
@@ -99,15 +136,31 @@
             });
         }
 
-        function getMembresias() {
-            adminService.getMembresias().then(function(response) {
+        function getInformationInitialToCreateCompany() {
+            adminService.getInformationInitialToCreateCompany().then(function(response) {
                 if (response.codigoRespuesta === "500") {
                     alert("Ha ocurrido un error interno, por favor intenta de nuevo más tarde.")
                     return;
                 }
-                vm.membresias = response.membresias;
+                console.info('RESPONSE getInformationInitialToCreateCompany',response);
+                vm.listMembresias = response.listMembresias;
+                vm.listPlanesPorEmpresa = response.listPlanesPorEmpresa;
+                vm.listPlanes = response.listPlanes;
             });
         }
+
+        function getEmpresas() {
+            console.info('ENTRO PAGE');
+            adminService.getEmpresasConvenio()
+                .then(function(response){
+                    if(response.codigoRespuesta === "500"){
+                        alert("Ha ocurrido un error interno, por favor intenta de nuevo mas tarde.")
+                        return;
+                    }
+                    vm.listEmpresas = response.empresas;
+                });
+        }
+
 
     }
 

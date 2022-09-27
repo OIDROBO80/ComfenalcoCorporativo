@@ -7,9 +7,6 @@ import java.util.Date;
  */
 public class EmpresaAfiliadoXCodigoDescuento implements java.io.Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private Integer id;
     private CodigoDescuento codigoDescuento;

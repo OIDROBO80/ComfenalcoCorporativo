@@ -34,6 +34,7 @@ public class AffiliateController {
 			responseCode = affiliateService.assignCode();
 			response = Response.status(200).entity(responseCode).build();
 		} catch (ErrorGeneral e) {
+			e.printStackTrace();
 			responseCode.setMessage(e.getMessage());
 			response = Response.status(e.getStatusCode())
 					.entity(responseCode).build();
@@ -42,11 +43,11 @@ public class AffiliateController {
 		return response;
 	}
 
-	@GET
+	@POST
 	@Path("/codigo-asignado")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAsignedCode(AffiliateDocumentRequest affiliateDocumentRequest) {
+	public Response postQueryAsignedCode(AffiliateDocumentRequest affiliateDocumentRequest) {
 		LOG.info("Start Call service GET: /afiliados/codigo-asignado ");
 		Response response ;
 		ResponseCodeQuery responseCode = new ResponseCodeQuery();
@@ -55,6 +56,7 @@ public class AffiliateController {
 			responseCode = affiliateService.getInfomationCodeAsigned();
 			response = Response.status(200).entity(responseCode).build();
 		} catch (ErrorGeneral e) {
+			e.printStackTrace();
 			responseCode.setMessage(e.getMessage());
 			response = Response.status(e.getStatusCode())
 					.entity(responseCode).build();

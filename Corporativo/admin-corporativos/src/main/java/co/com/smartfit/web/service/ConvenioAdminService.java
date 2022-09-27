@@ -8,12 +8,8 @@ import co.com.smartfit.web.business.rq.ObtenerConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ObtenerConvenioEmpresasRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioCodigosRq;
-import co.com.smartfit.web.business.rs.CrearConvenioEmpresaRs;
-import co.com.smartfit.web.business.rs.ObtenerCodigosAsignadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioEmpresasRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioCodigosRs;
+import co.com.smartfit.web.business.rs.*;
+import co.com.smartfit.web.entities.PlanesEmpresa;
 import co.com.smartfit.web.model.MembresiaModel;
 
 /**
@@ -71,6 +67,8 @@ public interface ConvenioAdminService {
      */
     ObtenerCodigosAsignadosRs obtenerCodigosAsignados(ObtenerCodigosAsignadosRq rq);
 
+    InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative();
+    /*CrearPlanRs createPlan(String nombrePlan,Integer dias);*/
     /**
      * Metodo que permite obtener las membresias en BD
      *

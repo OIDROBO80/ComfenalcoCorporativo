@@ -14,9 +14,9 @@
         <many-to-one name="empresaAfiliado" class="co.com.smartfit.web.entities.EmpresaAfiliado" fetch="select">
             <column name="empresa_afiliado" not-null="true" />
         </many-to-one>
-        <property name="asignado" type="java.lang.Boolean">
+        <!--property name="asignado" type="java.lang.Boolean">
             <column name="asignado" />
-        </property>
+        </property-->
         <property name="fechaAsignacion" type="timestamp">
             <column name="fecha_asignacion" length="19" />
         </property>

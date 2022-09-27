@@ -1,5 +1,10 @@
 package co.com.smartfit.web.model;
 
+import co.com.smartfit.web.dao.EmpresaEmpleadorXPlanDao;
+import co.com.smartfit.web.dao.PlanesDao;
+import co.com.smartfit.web.entities.EmpresaEmpleadorXPlan;
+import co.com.smartfit.web.service.PlanesAfiliadoService;
+
 import java.util.Date;
 import java.util.List;
 
@@ -15,10 +20,13 @@ public class EmpresaAfiliadoModel{
 	private String documentoNumero;
 	private String nombre;
 	private String email;
-	private String periodicidad;
+	private String nombrePlan;
 	private Date fechaRegistro;
+	private EmpresaEmpleadorXPlan empresaEmpleadorXPlan;
 	private List<CodigoDescuentoModel> codigosAsignados;
-	
+
+	private PlanesAfiliadoService planesAfiliadoService = new PlanesAfiliadoService();
+
 	/**
 	 * Metodo que obtiene el valor asociado a la propiedad codigosAsignados
 	 * @return List<String> el valor asociado a la propiedad codigosAsignados
@@ -117,16 +125,12 @@ public class EmpresaAfiliadoModel{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	/**
-	 * Metodo que obtiene el valor de la periodicidad
-	 * @return String el valor asociado a la periodicidad
-	 */
-	public String getPeriodicidad() { return periodicidad; }
-	/**
-	 * Metodo que obtiene el valor de la periodicidad
-	 * @return String el valor asociado a la periodicidad
-	 */
-	public void setPeriodicidad(String periodicidad) { this.periodicidad = periodicidad; }
+
+	public String getNombrePlan() {
+		return this.nombrePlan;
+	}
+
+	public void setNombrePlan(String nombrePlan) { this.nombrePlan = nombrePlan; }
 
 	/**
 	 * Metodo que obtiene el valor asociado a la propiedad fechaRegistro
@@ -142,7 +146,16 @@ public class EmpresaAfiliadoModel{
 	public void setFechaRegistro(Date fechaRegistro) {
 		this.fechaRegistro = fechaRegistro;
 	}
-	
-	
+
+
+	public EmpresaEmpleadorXPlan getEmpresaEmpleadorPlan() {
+		return empresaEmpleadorXPlan;
+	}
+
+	public void setEmpresaEmpleadorPlan(Integer IdEmpresaEmpleadorPlan) {
+		if (empresaEmpleadorXPlan==null){
+			this.empresaEmpleadorXPlan = planesAfiliadoService.getPlanByNombrePlan(IdEmpresaEmpleadorPlan,this.nombrePlan);
+		}
+	}
 	
 }

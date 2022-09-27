@@ -6,6 +6,9 @@
     <file type="web" url="file://$PROJECT_DIR$/Corporativo/admin-corporativos" />
     <file type="web" url="file://$PROJECT_DIR$/Corporativo/web-service-corporativos/WebServices" />
   </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="NASHORN" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>

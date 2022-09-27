@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Validator;
 import javax.ws.rs.core.Context;
 
+import co.com.smartfit.web.business.rs.*;
+import co.com.smartfit.web.entities.ErrorGeneral;
+import co.com.smartfit.web.entities.Planes;
+import co.com.smartfit.web.entities.PlanesEmpresa;
+import co.com.smartfit.web.service.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,18 +48,8 @@ import co.com.smartfit.web.business.rq.ObtenerConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ObtenerConvenioEmpresasRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioCodigosRq;
-import co.com.smartfit.web.business.rs.CrearConvenioEmpresaRs;
-import co.com.smartfit.web.business.rs.ObtenerCodigosAsignadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioEmpresasRs;
-import co.com.smartfit.web.business.rs.ObtenerMembresiasRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioCodigosRs;
 import co.com.smartfit.web.model.EmpresaEmpleadorModel;
 import co.com.smartfit.web.model.MembresiaModel;
-import co.com.smartfit.web.service.ConvenioAdminService;
-import co.com.smartfit.web.service.GestionadorService;
-import co.com.smartfit.web.service.GestionadorServiceImpl;
 import co.com.smartfit.web.util.Util;
 import co.com.smartfit.web.util.Security;
 
@@ -86,6 +81,12 @@ public class MainController {
 
     @Autowired
     ConvenioAdminService convenioAdminService;
+
+    @Autowired
+    PlanesPorEmpresaService planesPorEmpresaService;
+
+    @Autowired
+    AsignarPlanAEmpresaService asignarPlanAEmpresaService;
 
     public MainController() {
         security = new Security();
@@ -318,6 +319,66 @@ public class MainController {
         return "mensaje_convenio";
     }
 
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/getInformationInitialToCreateCompany", method = RequestMethod.GET)
+    public InformationInitialToCreateCompanyRs getInformationInitialToCreateCompany(@Context HttpServletRequest rq) throws ServletRequestBindingException {
+        LOG.info("INIT RESPONSE from: /getInformationInitialToCreateCompany");
+        InformationInitialToCreateCompanyRs res = new InformationInitialToCreateCompanyRs();
+        try {
+            res  = convenioAdminService.getInitialInformationToCreateCorporative();
+            res.setCodigoRespuesta(200);
+        } catch (ErrorGeneral e) {
+            res.setCodigoRespuesta(e.getStatusCode());
+            res.setDescription(e.getMessage());
+        }
+        LOG.info("RESPONSE from: /getInformationInitialToCreateCompany, codigo: " + res.getCodigoRespuesta());
+        return res;
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/createPlan/{nombrePlan}/{dias}", method = RequestMethod.GET)
+    public CrearPlanRs createPlan(@Context HttpServletRequest rq,
+                                  @PathVariable String nombrePlan,
+                                  @PathVariable Integer dias) throws ServletRequestBindingException {
+        LOG.info("INIT RESPONSE from: /CrearPlan");
+        CrearPlanRs res = new CrearPlanRs();
+        try {
+            List<Planes> listPlanesActuales = planesPorEmpresaService.createPlan(nombrePlan,dias);
+            res.setDescription("plan guardado");
+            res.setCodigoRespuesta(200);
+            res.setListPlanesActuales(listPlanesActuales);
+        } catch (ErrorGeneral e ) {
+            res.setCodigoRespuesta(e.getStatusCode());
+            res.setDescription(e.getMessage());
+        }
+        LOG.info("RESPONSE from: /CrearPlan, codigo: " + res.getCodigoRespuesta());
+        return res;
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/asignarPlanAEmpresa/{idPlan}/{IdEmpresa}", method = RequestMethod.GET)
+    public AsignarPlanAEmpresaRs asignarPlanAEmpresa(@Context HttpServletRequest rq,
+                                  @PathVariable Integer idPlan,
+                                  @PathVariable Integer IdEmpresa) throws ServletRequestBindingException {
+        LOG.info("INIT RESPONSE from: /asignarPlanAEmpresa");
+        AsignarPlanAEmpresaRs res = new AsignarPlanAEmpresaRs();
+        try {
+            List<PlanesEmpresa> listPlanesPorEmpresa = asignarPlanAEmpresaService.asignarPlanAEmpresa(idPlan,IdEmpresa);
+            res.setDescription("Asignacion Exitosa");
+            res.setCodigoRespuesta(200);
+            res.setListPlanesPorEmpresaActualizado(listPlanesPorEmpresa);
+        } catch (ErrorGeneral e ) {
+            res.setCodigoRespuesta(e.getStatusCode());
+            res.setDescription(e.getMessage());
+        }
+        LOG.info("RESPONSE from: /asignarPlanAEmpresa, codigo: " + res.getCodigoRespuesta());
+        return res;
+    }
+
     /**
      * Metodo que redirecciona a la vista de listar empresas de convenio para la parte de administracion de convenios
      * 
@@ -520,7 +581,8 @@ public class MainController {
     @RequestMapping(value = "/obtenerMembresias", method = RequestMethod.GET)
     public ObtenerMembresiasRs obtenerMembresias(@Context HttpServletRequest rq) throws ServletRequestBindingException {
         // inicializamos el response
-    	ObtenerMembresiasRs res = new ObtenerMembresiasRs();
+        LOG.info("INIT RESPONSE from: /obtenerMembresias");
+        ObtenerMembresiasRs res = new ObtenerMembresiasRs();
         try {
             List<MembresiaModel> membresias = convenioAdminService.obtenerMembresias();
             res.setMembresias(membresias);
@@ -766,7 +828,7 @@ public class MainController {
         IOUtils.copy(in, response.getOutputStream());
 
     }
-    
+
     /**
      * Método que permite eliminar un convenio de un afiliado
      */

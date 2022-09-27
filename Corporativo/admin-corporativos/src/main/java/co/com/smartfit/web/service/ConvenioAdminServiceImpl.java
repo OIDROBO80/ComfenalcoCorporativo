@@ -7,11 +7,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
+import co.com.smartfit.web.business.rs.*;
+import co.com.smartfit.web.dao.*;
+import co.com.smartfit.web.entities.*;
 import co.com.smartfit.web.enums.Periodicidad;
+import co.com.smartfit.web.model.*;
 import co.com.smartfit.web.util.Util;
+
 import org.apache.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
@@ -24,29 +27,6 @@ import co.com.smartfit.web.business.rq.ObtenerConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ObtenerConvenioEmpresasRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioAfiliadosRq;
 import co.com.smartfit.web.business.rq.ProcesarCsvConvenioCodigosRq;
-import co.com.smartfit.web.business.rs.AsignarCodigoConvenioAfiliadoRs;
-import co.com.smartfit.web.business.rs.CrearConvenioEmpresaRs;
-import co.com.smartfit.web.business.rs.ObtenerCodigosAsignadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ObtenerConvenioEmpresasRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioAfiliadosRs;
-import co.com.smartfit.web.business.rs.ProcesarCsvConvenioCodigosRs;
-import co.com.smartfit.web.dao.CodigoDescuentoDao;
-import co.com.smartfit.web.dao.EmpresaAfiliadoDao;
-import co.com.smartfit.web.dao.EmpresaAfiliadoXCodigoDescuentoDao;
-import co.com.smartfit.web.dao.EmpresaEmpleadorDao;
-import co.com.smartfit.web.dao.MembresiaDao;
-import co.com.smartfit.web.dao.TipoDocumentoIdentidadDao;
-import co.com.smartfit.web.entities.CodigoDescuento;
-import co.com.smartfit.web.entities.EmpresaAfiliado;
-import co.com.smartfit.web.entities.EmpresaAfiliadoXCodigoDescuento;
-import co.com.smartfit.web.entities.EmpresaEmpleador;
-import co.com.smartfit.web.entities.Membresia;
-import co.com.smartfit.web.entities.TipoDocumentoIdentidad;
-import co.com.smartfit.web.model.CodigoDescuentoModel;
-import co.com.smartfit.web.model.EmpresaAfiliadoModel;
-import co.com.smartfit.web.model.EmpresaEmpleadorModel;
-import co.com.smartfit.web.model.MembresiaModel;
 import co.com.smartfit.web.shipping.EmailShipping;
 import co.com.smartfit.web.util.CsvUtil;
 
@@ -87,16 +67,18 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	private static final String ERR_CA_CCE_REGAFIL = "ERR_CA_CCE_REGAFIL";
 	// datos para CSV de codigos
 	private static final int CSV_CODIGO_COL_CODIGO = 0;
+	private static final int CSV_CODIGO_COL_NOMBRE_PLAN = 1;
 	// datos para CSV de afiliados
 	private static final int CSV_AFILIADO_COL_TIPODOCID = 0;
 	private static final int CSV_AFILIADO_COL_DOCNUMERO = 1;
 	private static final int CSV_AFILIADO_COL_NOMBRE = 2;
 	private static final int CSV_AFILIADO_COL_CORREO = 3;
-	private static final int CSV_AFILIADO_COL_PERIODICIDAD= 4;
+	private static final int CSV_AFILIADO_COL_ID_NOMBRE_PLAN= 4;
 
 	public ConvenioAdminServiceImpl() {
 		csvUtil = new CsvUtil();
 	}
+
 
 	@Override
 	public CrearConvenioEmpresaRs crearConvenioEmpresa(CrearConvenioEmpresaRq request) {
@@ -440,10 +422,6 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 					fila[4] = empresa.getRazonSocial();
 				}
 				fila[5] = codigo.getCodigo();
-				if (null != codigo.getFechaAsignacion()) {
-					fila[6] = format.format(codigo.getFechaAsignacion());
-				}
-
 				filas.add(fila);
 			}
 		}
@@ -466,51 +444,33 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		filas.add(cabezera);
 		String[] fila = null;
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		
-		// Mapear los tipos de Documentos
-		HashMap<Integer, String> tiposDocMap = new HashMap<Integer, String>();
-		TipoDocumentoIdentidadDao tiposDocDao = new TipoDocumentoIdentidadDao();
-		List<TipoDocumentoIdentidad> tiposDocList = null;
-		try {
-			tiposDocList = tiposDocDao.obtenerTodos();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		for (TipoDocumentoIdentidad tipDoc : tiposDocList) {
-			tiposDocMap.put(tipDoc.getId(), tipDoc.getDescripcion());
-	    }
+		EmpresaEmpleadorXPlanDao empresaEmpleadorXPlanDao = new EmpresaEmpleadorXPlanDao();
+		EmpresaAfiliadoXCodigoDescuentoDao  empresaAfiliadoXCodigoDescuentoDao = new EmpresaAfiliadoXCodigoDescuentoDao();
+		for (CodigoDescuentoModel codigoAsignado : codigosAsignados) {
+			EmpresaEmpleadorXPlan empresaEmpleadorXPlan = empresaEmpleadorXPlanDao.getEmpresaEmpleadorXPlanById(codigoAsignado.getIdEmpresaPlan());
+			EmpresaEmpleador empresaEmpleador = empresaEmpleadorXPlan.getEmpresaEmpleador();
+			EmpresaAfiliadoXCodigoDescuento empresaAfiliadoXCodigoDescuento = empresaAfiliadoXCodigoDescuentoDao.getEmpresaAfiliadoXCodigoDescuentoByCodigoDescuento(codigoAsignado.getId());
+			EmpresaAfiliado empresaAfiliado = empresaAfiliadoXCodigoDescuento.getEmpresaAfiliado();
+			TipoDocumentoIdentidad tipoDocumentoIdentidad = empresaAfiliado.getTipoDocumentoIdentidad();
 
-		for (CodigoDescuentoModel model : codigosAsignados) {
 			fila = new String[12];
-			fila[0] = model.getCodigo();
-			if (null != model.getFechaAsignacion()) {
-				fila[1] = format.format(model.getFechaAsignacion());
+			fila[0] = codigoAsignado.getCodigo();
+			fila[1] = format.format(empresaAfiliadoXCodigoDescuento.getFechaAsignacion());
+			String valueTipoDocumentoIdentidad = tipoDocumentoIdentidad.getCodigo();
+			if (valueTipoDocumentoIdentidad.contains(TIPO_DOC_ID_PLUS)) {
+				valueTipoDocumentoIdentidad = valueTipoDocumentoIdentidad.replaceAll(TIPO_DOC_ID_PLUS, "");
 			}
-
-			EmpresaAfiliadoModel afiliado = model.getAfiliado();
-			if (null != afiliado) {
-				String tipoDocumentoIdentidad = afiliado.getTipoDocumentoIdentidad();
-				if (tipoDocumentoIdentidad.contains(TIPO_DOC_ID_PLUS)) {
-					tipoDocumentoIdentidad = tipoDocumentoIdentidad.replaceAll(TIPO_DOC_ID_PLUS, "");
-				}
-				fila[2] = tipoDocumentoIdentidad;
-				fila[3] = afiliado.getDocumentoNumero();
-				fila[4] = afiliado.getNombre();
-				fila[5] = afiliado.getEmail();
-				
-				EmpresaEmpleadorModel empresa = afiliado.getEmpresaEmpleador();
-				if (null != empresa) {
-					fila[6] = empresa.getRazonSocial();
-
-					String tipoDocumentoEmpresa = tiposDocMap.get(empresa.getDocumentoTipo());
-
-					fila[7] = tipoDocumentoEmpresa;
-					fila[8] = empresa.getDocumentoNumero();
-					fila[9] = empresa.getTelefono();
-					fila[10] = empresa.getEmail();
-					fila[11] = empresa.getRepresentanteLegal();
-				}
-			}
+			fila[2] = valueTipoDocumentoIdentidad;
+			fila[3] = empresaAfiliado.getDocumentoNumero();
+			fila[4] = empresaAfiliado.getNombre();
+			fila[5] = empresaAfiliado.getEmail();
+			fila[6] = empresaEmpleador.getRazonSocial();
+			String tipoDocumentoEmpresa = empresaEmpleador.getTipoDocumentoIdentidad().getDescripcion();
+			fila[7] = tipoDocumentoEmpresa;
+			fila[8] = empresaEmpleador.getDocumentoNumero();
+			fila[9] = empresaEmpleador.getTelefono();
+			fila[10] = empresaEmpleador.getEmail();
+			fila[11] = empresaEmpleador.getRepresentanteNombre();
 			filas.add(fila);
 		}
 		return (csvUtil.generarCsvBase64(filas));
@@ -537,33 +497,25 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		try {
 			// procesamos el archivo CSV de codigos
 			List<CodigoDescuentoModel> codigosCsv = this.obtenerModeloCodigosDeCsv(request.getCsvCodigos());
-			LOG.info("Seran procesados "+ codigosCsv.size() +" del modelo CodigoDescuento");
+			LOG.info("Seran procesados "+ codigosCsv.size() +" al modelo CodigoDescuento");
 			// creamos cada uno de los codigos en BD
 			for (CodigoDescuentoModel codigoModel : codigosCsv) {
 				LOG.info("Procesando el codigo "+ codigoModel.getCodigo());
-				codigoModel.setEmpresaEmpleador(request.getEmpresa());
-				// mapeamos el modelo de codigo a entidad
-				CodigoDescuento entidad = this.mapearCodigoDescuentoEntidad(codigoModel);
-				CodigoDescuentoDao codigoDescuentoDao = new CodigoDescuentoDao();
-
-				// try control para cada codigo que falla
 				try {
-					
-					// guardamos la entidad en BD
-					int codigoDescuentoId = DB_ERROR;
-					codigoDescuentoId = codigoDescuentoDao.guardarEntidad(entidad);
-					
-					if (DB_ERROR == codigoDescuentoId) {
+					CodigoDescuento entidad = this.mapearCodigoDescuentoEntidad(codigoModel,request.getEmpresa());
+					CodigoDescuentoDao codigoDescuentoDao = new CodigoDescuentoDao();
+					if ((codigoDescuentoDao.guardarEntidad(entidad) == DB_ERROR)) {
 						codigosError.add(codigoModel);
 					} else {
 						codigosAsignados.add(codigoModel);
 					}
-
-
-				} catch (Exception e) {
+				} catch (ErrorGeneral eg) {
 					codigosError.add(codigoModel);
-					mensajesError.add("Código duplicado");
-					LOG.error(e.getMessage());
+					mensajesError.add(eg.getMessage());
+				} catch (Exception ex) {
+					codigosError.add(codigoModel);
+					mensajesError.add( "No es posible cargar el codigo");
+					LOG.error(ex.getMessage());
 				}
 			}
 			// armamos la respuesta
@@ -658,16 +610,17 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 						LOG.info("El numero de documento fue actualizado o creado");
 						// asignamos el codigo
 						AsignarCodigoConvenioAfiliadoRq asignarCodigoConvenioAfiliadoRq = new AsignarCodigoConvenioAfiliadoRq();
-						EmpresaAfiliadoModel empresaAfiliado = new EmpresaAfiliadoModel();
-						empresaAfiliado.setId(afiliadoId);
-						empresaAfiliado.setDocumentoNumero(entidad.getDocumentoNumero());
-						empresaAfiliado.setEmpresaEmpleador(empresaEmpleadorModel);
-						asignarCodigoConvenioAfiliadoRq.setEmpresaAfiliado(empresaAfiliado);
+						afiliadoModel.setId(afiliadoId);
+						afiliadoModel.setDocumentoNumero(entidad.getDocumentoNumero());
+						afiliadoModel.setEmpresaEmpleador(empresaEmpleadorModel);
+						afiliadoModel.setEmpresaEmpleadorPlan(empresaId);
+						asignarCodigoConvenioAfiliadoRq.setEmpresaAfiliado(afiliadoModel);
 						AsignarCodigoConvenioAfiliadoRs rs = new AsignarCodigoConvenioAfiliadoRs();
 						boolean condigoAsignado = this.codigoEstaAsignado(afiliadoId);
 						if (!condigoAsignado)
 						{
-							rs = this.asignarCodigoConvenioAfiliado(afiliadoModel.getPeriodicidad(),asignarCodigoConvenioAfiliadoRq);
+							rs = this.asignarCodigoConvenioAfiliado(afiliadoModel.getEmpresaEmpleadorPlan().getIdEmpresaEmpleador(),
+									asignarCodigoConvenioAfiliadoRq);
 							if (!CONSUMO_SUCESS.equals(rs.getCodigoRespuesta())) {
 								LOG.info("Se presenta un error asignando el codigo al afiliado");
 								// indicamos los errores de negocio
@@ -714,6 +667,9 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 				} catch (ConnectException e) {
 					afiliadosError.add(afiliadoModel);
 					mensajesError.add("Problemas de comunicacion (timeout) con el Web Service de afiliados");
+				}  catch (ErrorGeneral e) {
+				afiliadosError.add(afiliadoModel);
+				mensajesError.add(e.getMessage());
 				} catch (Exception e) {
 					afiliadosError.add(afiliadoModel);
 					if (null == e.getMessage()) {
@@ -762,8 +718,8 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	 *         de codigo
 	 * @throws Exception
 	 */
-	private AsignarCodigoConvenioAfiliadoRs 	asignarCodigoConvenioAfiliado(String periodicidad,AsignarCodigoConvenioAfiliadoRq request) {
-		LOG.info("Asignando convenio con periodicidad "+ periodicidad+" al afiliado: " +request.getEmpresaAfiliado().getDocumentoNumero());
+	private AsignarCodigoConvenioAfiliadoRs 	asignarCodigoConvenioAfiliado(int idEmpresaPlan,AsignarCodigoConvenioAfiliadoRq request) {
+		LOG.info("Asignando convenio a empresa plan "+ idEmpresaPlan+" al afiliado: " +request.getEmpresaAfiliado().getDocumentoNumero());
 		AsignarCodigoConvenioAfiliadoRs response = new AsignarCodigoConvenioAfiliadoRs();
 		CodigoDescuentoDao codigoDescuentoDao = new CodigoDescuentoDao();
 		CodigoDescuento codigoAsignar=null;
@@ -794,15 +750,10 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 				return response;
 			}
 			// obtenemos un codigo disponible
-			List<CodigoDescuento> codigosDescuento = codigoDescuentoDao.obtenerCodigosDisponiblesPorEmpresaEmpleador(true, empresaAfiliadoModel.getEmpresaEmpleador().getIdEmpresa());
-			for (CodigoDescuento codigoDescuento : codigosDescuento) {
-				if (codigoDescuento.getPeriodicidad().equals(periodicidad)) {
-					codigoAsignar=codigoDescuento;
-					break;
-				}
-			}
+			List<CodigoDescuento> codigosDescuentoDisponible = codigoDescuentoDao.obtenerCodigosDisponiblesPorPlan(true, idEmpresaPlan);
 			// asignamos el codigo despues de hacer un Shuffle
-			if (null == codigoAsignar) {
+			if ( codigosDescuentoDisponible.size()==0) {
+
 				// evitamos null pointer
 				String errorMsg = "Error en Bean-asignarCodigoConvenioAfiliado, no hay codigos disponibles para asignar."
 						+ "\n";
@@ -814,7 +765,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 
 				return response;
 			}
-
+			codigoAsignar = codigosDescuentoDisponible.get(0);
 			// creamos y guardamos la entidad de empresa_afiliado_x_codigo_descuento
 			EmpresaAfiliadoXCodigoDescuento entidad = new EmpresaAfiliadoXCodigoDescuento();
 			entidad.setEmpresaAfiliado(empresaAfiliado);
@@ -883,32 +834,34 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 			List<EmpresaAfiliadoXCodigoDescuento> listEmpresaAfiliadoXCodigoDescuento =
 					empresaAfiliadoXCodigoDescuento
 						.obtenerCodigosAsignadosPorEmpresaAfiliado(afiliadoId, fechaInicial,fechaFinal);
-			LOG.info("El afiliado tiene: "+listEmpresaAfiliadoXCodigoDescuento.size()+"  codigos asignados");
-			List<EmpresaAfiliadoXCodigoDescuento> listEmpresaAfiliadoXCodigoDescuentoActivos =
+			LOG.info("El afiliado tiene: "+listEmpresaAfiliadoXCodigoDescuento.size()+"  codigos asignados y activos");
+			/*List<EmpresaAfiliadoXCodigoDescuento> listEmpresaAfiliadoXCodigoDescuentoActivos =
 					listEmpresaAfiliadoXCodigoDescuento.stream()
 					.filter(registry -> registry.getAsignado().equals(true))
-					.collect(Collectors.toList());
-			LOG.info("El afiliado tiene: "+listEmpresaAfiliadoXCodigoDescuentoActivos.size()+"  codigos activos");
-			if (listEmpresaAfiliadoXCodigoDescuentoActivos.size()>0)
+					.collect(Collectors.toList());*/
+			/*LOG.info("El afiliado tiene: "+listEmpresaAfiliadoXCodigoDescuentoActivos.size()+"  codigos activos");*/
+			if (listEmpresaAfiliadoXCodigoDescuento.size()>0)
 			{
-				listEmpresaAfiliadoXCodigoDescuentoActivos.sort((o1, o2) -> {
+				listEmpresaAfiliadoXCodigoDescuento.sort((o1, o2) -> {
 					if (o1.getFechaAsignacion() == null || o2.getFechaAsignacion() == null)
 						return 0;
 					return o2.getFechaAsignacion().compareTo(o1.getFechaAsignacion());
 				});
 				//Ultimo Codigo asignado
-				EmpresaAfiliadoXCodigoDescuento lastEmpresaAfiliadoXCodigoDescuento =listEmpresaAfiliadoXCodigoDescuentoActivos.get(0);
+				EmpresaAfiliadoXCodigoDescuento lastEmpresaAfiliadoXCodigoDescuento =listEmpresaAfiliadoXCodigoDescuento.get(0);
 				LOG.info("El afiliado tiene el ultimo codigo asignado con fecha de : "+lastEmpresaAfiliadoXCodigoDescuento.getFechaAsignacion());
 				CodigoDescuentoDao codigoDescuentoDao = new CodigoDescuentoDao();
 				lastCodigoDescuentoAsignado = codigoDescuentoDao.obtenerCodigoDescuentoPorCodigo(lastEmpresaAfiliadoXCodigoDescuento.getCodigoDescuento().getCodigo());
 				Date fechadeAsignado =lastEmpresaAfiliadoXCodigoDescuento.getFechaAsignacion();
-				LOG.info("El afiliado tiene el ultimo codigo asignado con periocidad de : "+lastCodigoDescuentoAsignado.getPeriodicidad()+
-						" y fecha de asignacion:"+fechadeAsignado);
-				periodicidadEnum=Periodicidad.valueOf(lastCodigoDescuentoAsignado.getPeriodicidad());
-				Date fechaInicialToValidate = Util.addDays(hoy,-(periodicidadEnum.getDaysToPeriod()-periodicidadEnum.getDaysToValidateAgreements()));
-				Date fechaFinalToValidate = Util.addDays(hoy,0);
+				Planes planAsignado = lastCodigoDescuentoAsignado.getEmpresaEmpleadorXPlan().getPlan();
+				LOG.info("El afiliado tiene el ultimo codigo asignado con plan : "+planAsignado.getNombre()+" y  periocidad de : "+planAsignado.getPeriocidad()+
+						", la fecha de es asignacion:"+fechadeAsignado);
+
+				Date fechaInicialToValidate = com.corporativos_smartfit.util.Util.addDays(hoy,-(planAsignado.getPeriocidad()-planAsignado.getDiasValidacion()));
+				Date fechaFinalToValidate = com.corporativos_smartfit.util.Util.addDays(hoy,0);
 				LOG.info("Las fecha utilizadas para validar fueron : "+fechaInicialToValidate+" y "+fechaFinalToValidate);
-				result =   fechadeAsignado.after(fechaInicialToValidate) && fechadeAsignado.before(fechaFinalToValidate);
+				result =    fechadeAsignado.after(fechaInicialToValidate) && fechadeAsignado.before(fechaFinalToValidate);
+
 			}
 		} catch ( Exception e) {
 			LOG.info("Se presento un error validando si el afiliado tiene codigos asignados");
@@ -917,19 +870,9 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		return result;
 	}
 
-
-
-	/**
-	 * Metodo que permite obtener una lista del modelo de engocio de codigo a
-	 * partir de un CSV en base 64
-	 * 
-	 * @param csvCodigosB64
-	 *            String en base 64 con el archivo de codigos
-	 * @return List<EmpresaCodigoModel> lista de codigos obtenidos del CSV
-	 */
 	private List<CodigoDescuentoModel> obtenerModeloCodigosDeCsv(String csvCodigosB64) throws IllegalArgumentException {
 		LOG.info("Convirtiendo el string csv base 64 a el modelo CodigoDescuento ");
-		ArrayList<CodigoDescuentoModel> codigos = new ArrayList<>();
+		ArrayList<CodigoDescuentoModel> listCodigos = new ArrayList<CodigoDescuentoModel>();
 		try {
 			// obtenemos las filas del archivo
 			List<String[]> filas = csvUtil.obtenerFilasCsvBase64(csvCodigosB64, true);
@@ -937,12 +880,13 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 			LOG.info("Seran procesadas "+ filas.size() +" del archivo csv.");
 			for (String[] fila : filas) {
 				// comprobamos que la fila no tenga sus datos principales nulos
-				if (fila[CSV_CODIGO_COL_CODIGO] != null) {
+				if (fila[CSV_CODIGO_COL_CODIGO] != null && fila[CSV_CODIGO_COL_NOMBRE_PLAN] != null) {
 					CodigoDescuentoModel codigo = new CodigoDescuentoModel();
-					codigo.setAsignado(false);
 					codigo.setCodigo(fila[CSV_CODIGO_COL_CODIGO]);
-					LOG.info("Seran ingresado el codigo "+ codigo.getCodigo() +" al modelo CodigoDescuento.");
-					codigos.add(codigo);
+					codigo.setPeriodicidad(fila[CSV_CODIGO_COL_NOMBRE_PLAN]);
+					codigo.setAsignado(false);
+					LOG.info("Seran ingresado el codigo "+ codigo.getCodigo());
+					listCodigos.add(codigo);
 				}
 			}
 		} catch (IllegalArgumentException e) {
@@ -950,14 +894,14 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		} catch (Exception e) {
 			throw e;
 		}
-		return codigos;
+		return listCodigos;
 	}
 
 	/**
 	 * Metodo que permite obtener una lista del modelo de engocio de afiliado a
 	 * partir de un CSV en base 64
 	 * 
-	 * @param csvAfiliadosB64
+	 * @param {csvAfiliadosB64}
 	 *            String en base 64 con el archivo de afiliados
 	 * @return List<EmpresaAfiliadoModel> lista de empleados obtenidos del CSV
 	 */
@@ -975,7 +919,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 				// comprobamos que la fila no tenga sus datos principales nulos
 				if (null != fila[CSV_AFILIADO_COL_TIPODOCID] && null != fila[CSV_AFILIADO_COL_DOCNUMERO]
 						&& null != fila[CSV_AFILIADO_COL_NOMBRE] && null != fila[CSV_AFILIADO_COL_CORREO]
-						&& null != fila[CSV_AFILIADO_COL_PERIODICIDAD]
+						&& null != fila[CSV_AFILIADO_COL_ID_NOMBRE_PLAN]
 						) {
 					EmpresaAfiliadoModel afiliado = new EmpresaAfiliadoModel();
 					// concatenamos el id de tipo doc si es necesario
@@ -986,16 +930,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 					afiliado.setDocumentoNumero(fila[CSV_AFILIADO_COL_DOCNUMERO]);
 					afiliado.setEmail(fila[CSV_AFILIADO_COL_CORREO]);
 					afiliado.setNombre(fila[CSV_AFILIADO_COL_NOMBRE]);
-					if (Periodicidad.valueOf(fila[CSV_AFILIADO_COL_PERIODICIDAD]).equals(Periodicidad.ANUAL) ||
-						Periodicidad.valueOf(fila[CSV_AFILIADO_COL_PERIODICIDAD]).equals(Periodicidad.TRIMESTRE) ||
-						Periodicidad.valueOf(fila[CSV_AFILIADO_COL_PERIODICIDAD]).equals(Periodicidad.MENSUAL)
-					) {
-						afiliado.setPeriodicidad(fila[CSV_AFILIADO_COL_PERIODICIDAD]);
-
-					} else {
-						throw new Error("Periocidad no valida [ANUAL,TRIMESTRE,MENSUAL]");
-					}
-
+					afiliado.setNombrePlan(fila[CSV_AFILIADO_COL_ID_NOMBRE_PLAN]);
 					LOG.info("Sera agregado el numero de documento: "+afiliado.getDocumentoNumero()+" al listado EmpresaAfiliadoModel ");
 					afiliados.add(afiliado);
 				}
@@ -1108,7 +1043,6 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 			// Obtener Cantidad de Codigos disponibles
 			CodigoDescuentoDao codigoDescuentoDao = new CodigoDescuentoDao();
 			List<CodigoDescuento> listCodigoDescuento = codigoDescuentoDao.obtenerCodigosDisponiblesPorEmpresaEmpleador(true, empresaEmpleador.getId());
-			
 			response.setEmpresa(mapearEmpresaEmpleadorModel(empresaEmpleador));
 			response.setCsvEmpleados(obtenerCsvAfiliados(listEmpresaAfiliadoModel));
 			response.setEmpleados(listEmpresaAfiliadoModel);
@@ -1125,13 +1059,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		return response;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.co.web.service.ConvenioAdminService#obtenerCodigosAsignados(com.co.web.
-	 * business.rq.ObtenerCodigosAsignadosRq)
-	 */
+
 	@Override
 	public ObtenerCodigosAsignadosRs obtenerCodigosAsignados(ObtenerCodigosAsignadosRq rq) {
 		LOG.info("Obtener codigos asignados");
@@ -1143,24 +1071,18 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 			List<EmpresaAfiliadoXCodigoDescuento> joins = empresaAfiliadoXCodigoDescuentoDao
 					.obtenerCodigosAsignados(rq.getFechaInicial(), rq.getFechaFinal());
 
-			if (null != joins) {
-				LOG.info("EmpresaAfiliadoXCodigoDescuento: " + joins.size());
-			} else {
-				LOG.info("EmpresaAfiliadoXCodigoDescuento: null");
-			}
-
 			// indicamos los codigos
 			List<CodigoDescuentoModel> codigosAsignados = new ArrayList<>();
 			CodigoDescuentoModel codigoAsignado = null;
 			for (EmpresaAfiliadoXCodigoDescuento join : joins) {
-				// System.out.println("EmpresaAfiliadoXCodigoDescuento: " + new
-				// Gson().toJson(join));
+
 				String codigo = (null != join.getCodigoDescuento()) ? join.getCodigoDescuento().getCodigo() : null;
 
 				// creamos un codigo nuevo, le asignamos los valores y lo ingresamos al arreglo
 				codigoAsignado = new CodigoDescuentoModel();
 				codigoAsignado.setCodigo(codigo);
 				codigoAsignado.setAsignado(join.getAsignado());
+				LOG.info("FechaAsignacion : " + join.getFechaAsignacion()+"para el codigo"+codigo);
 				codigoAsignado.setFechaAsignacion(join.getFechaAsignacion());
 
 				EmpresaAfiliadoModel afiliado = mapearEmpresaAfiliadoModel(join.getEmpresaAfiliado());
@@ -1186,6 +1108,19 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	}
 
 	@Override
+	public InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative() throws ErrorGeneral {
+		LOG.info("INIT getInitialInformationToCreateCorporative" );
+		InformationInitialToCreateCompanyRs response  = new InformationInitialToCreateCompanyRs();
+		PlanesDao planesDao = new PlanesDao();
+		PlanesEmpresaDao planesEmpresaDao = new PlanesEmpresaDao();
+		response.setListMembresias(this.obtenerMembresias());
+		response.setListPlanes(planesDao.obtenerTodosEntidades());
+		response.setListPlanesPorEmpresa(planesEmpresaDao.obtenerTodosEntidades());
+		LOG.info("END getInitialInformationToCreateCorporative" );
+		return response;
+	}
+
+	@Override
 	public List<MembresiaModel> obtenerMembresias() {
 		List<MembresiaModel> membresias = new ArrayList<>();
 		try {
@@ -1204,6 +1139,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		return membresias;
 	}
 
+
 	private MembresiaModel mapearMembresiaModel(Membresia entidad) {
 		if (null == entidad) {
 			return null;
@@ -1219,7 +1155,6 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		EmpresaEmpleador entidad = new EmpresaEmpleador();
 		TipoDocumentoIdentidadDao tipoDocumentoIdentidadDao = new TipoDocumentoIdentidadDao();
 		TipoDocumentoIdentidad tipoDocumentoEmpresa = tipoDocumentoIdentidadDao.obtenerTipoDocumentoPorId(empresa.getDocumentoTipo());
-		
 		entidad.setTipoDocumentoIdentidad(tipoDocumentoEmpresa);
 		entidad.setDocumentoNumero(empresa.getDocumentoNumero());
 		entidad.setEmail(empresa.getEmail());
@@ -1238,29 +1173,26 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		entidad.setTextoEmail(empresa.getTextoEmail());
 		return entidad;
 	}
-	
-	private CodigoDescuento mapearCodigoDescuentoEntidad(CodigoDescuentoModel model) {
-		LOG.info("Mapeando el codigo"+model.getCodigo()+"al modelo CodigoDescuento");
+
+	/*private EmpresaEmpleador mapearEmpresaEmpleadorEntidad(int idEmpresaEmpleadorPlan) {
+		LOG.info("Mapeando la entidad EmpresaEmpleador para el idEmpresaEmpleadorPlan "+idEmpresaEmpleadorPlan);
+		EmpresaEmpleador entidad = new EmpresaEmpleador();
+		EmpresaEmpleadorXPlanDao empresaEmpleadorXPlanDao = new EmpresaEmpleadorXPlanDao();
+		EmpresaEmpleadorXPlan empresaEmpleadorXPlan = empresaEmpleadorXPlanDao.getEmpresaEmpleadorXPlanById(idEmpresaEmpleadorPlan);
+		return empresaEmpleadorXPlan.getEmpresaEmpleador();
+	}*/
+
+	private CodigoDescuento mapearCodigoDescuentoEntidad(CodigoDescuentoModel model,EmpresaEmpleadorModel empresa) {
+		LOG.info("Mapeando el codigo "+model.getCodigo()+" al modelo CodigoDescuento");
 		CodigoDescuento entidad = new CodigoDescuento();
-		EmpresaEmpleador empresaEmpleador = this.mapearEmpresaEmpleadorEntidad(model.getEmpresaEmpleador());
-		entidad.setEmpresaEmpleador(empresaEmpleador);
-		if (null != empresaEmpleador && null == empresaEmpleador.getId()) {
-			EmpresaEmpleadorDao empresaEmpleadorDao = new EmpresaEmpleadorDao();
-			int tipoDoc = (null != empresaEmpleador.getTipoDocumentoIdentidad()) ? empresaEmpleador.getTipoDocumentoIdentidad().getId() : -1;
-			String numDoc = empresaEmpleador.getDocumentoNumero();
-			Membresia membresia = empresaEmpleador.getMembresia();
-			try {
-				empresaEmpleador = empresaEmpleadorDao.obtenerEmpresaPorDocumento(tipoDoc, numDoc, membresia.getId());
-			} catch (Exception e) {
-				empresaEmpleador = null;
-			}
-			entidad.setEmpresaEmpleador(empresaEmpleador);
-		}
+		//EmpresaEmpleador empresaEmpleador = this.mapearEmpresaEmpleadorEntidad(empresa);
+		PlanesAfiliadoService planesAfiliadoService = new PlanesAfiliadoService();
+		EmpresaEmpleadorXPlan empresaEmpleadorXPlan =planesAfiliadoService.getPlanByNombrePlan(empresa.getIdEmpresa(),model.getPeriodicidad());
+		entidad.setIdEmpresaPlan(empresaEmpleadorXPlan.getId());
 		// datos generados por el sistema
-		entidad.setId(model.getId());
+		//entidad.setId(model.getId());
 		entidad.setCodigo(model.getCodigo());
 		entidad.setAsignado(model.getAsignado());
-
 		return entidad;
 	}
 
@@ -1298,17 +1230,14 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	}
 
 	private CodigoDescuentoModel mapearCodigoDescuentoModel(CodigoDescuento entidad,
-			EmpresaAfiliadoXCodigoDescuento empresaAfiliadoXCodigoDescuento) {
+															EmpresaAfiliadoXCodigoDescuento empresaAfiliadoXCodigoDescuento) {
 		LOG.info("Mapenado la entidad CodigoDescuentoModel con el codigo: "+entidad.getCodigo());
 		CodigoDescuentoModel model = new CodigoDescuentoModel();
-		if (null == entidad) {
-			return model;
-		}
 		model.setCodigo(entidad.getCodigo());
-		
 		// datos generados por el sistema
 		model.setAsignado(entidad.getAsignado());
-		model.setPeriodicidad(entidad.getPeriodicidad());
+		Planes plan =entidad.getEmpresaEmpleadorXPlan().getPlan();
+		model.setPeriodicidad(plan.getNombre());
 		if (null != empresaAfiliadoXCodigoDescuento) {
 			model.setFechaAsignacion(empresaAfiliadoXCodigoDescuento.getFechaAsignacion());
 		}
@@ -1319,15 +1248,10 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	private EmpresaAfiliadoModel mapearEmpresaAfiliadoModel(EmpresaAfiliado entidad) {
 		LOG.info("Mapeando la entiada EmpresaAfiliadoModel para el afiliado: "+entidad.getDocumentoNumero());
 		EmpresaAfiliadoModel model = new EmpresaAfiliadoModel();
-		if (null == entidad) {
-			return model;
-		}
 		model.setId(entidad.getId());
 		model.setDocumentoNumero(entidad.getDocumentoNumero());
 		model.setEmail(entidad.getEmail());
 		model.setNombre(entidad.getNombre());
-
-		// asignamos objetos de clave foranea
 		if (null != entidad.getEmpresaEmpleador()) {
 			EmpresaEmpleadorModel empresaEmpleador = mapearEmpresaEmpleadorModel(entidad.getEmpresaEmpleador());
 			model.setEmpresaEmpleador(empresaEmpleador);
@@ -1344,9 +1268,6 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	private EmpresaEmpleadorModel mapearEmpresaEmpleadorModel(EmpresaEmpleador entidad) {
 		LOG.info("Obteniendo la entidad EmpresaEmpleadorModel del numero de documento: "+entidad.getDocumentoNumero());
 		EmpresaEmpleadorModel model = new EmpresaEmpleadorModel();
-		if (null == entidad) {
-			return model;
-		}
 		model.setIdEmpresa(entidad.getId());
 		model.setDocumentoNumero(entidad.getDocumentoNumero());
 		model.setEmail(entidad.getEmail());

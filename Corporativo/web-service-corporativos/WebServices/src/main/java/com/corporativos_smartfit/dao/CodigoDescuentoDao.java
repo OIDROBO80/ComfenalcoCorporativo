@@ -30,95 +30,29 @@ public class CodigoDescuentoDao extends GenericDao<CodigoDescuento> {
     public CodigoDescuentoDao() {
         super(CodigoDescuento.class);
     }
-    
-    /**
-     * Metodo que permite obtener entidades de CodigoDescuento que pertenecen a una EmpresaEmpleador
-     * 
-     * @param {disponibles} indica si se desea obtener los codigos disponibles
-     * @param {idEmpresaEmpleador} Identificador de la entidad de EmpresaEmpleador
-     * @return {List<CodigoDescuento>} codigos de descuento disponibles o no en base de datos (según el criterio)
-     * @throws Exception
-     */
-	@SuppressWarnings("unchecked")
-	public List<CodigoDescuento> obtenerCodigosDisponiblesPorEmpresaEmpleador(boolean disponibles, int idEmpresaEmpleador, @Nullable String periodicidad) throws ErrorGeneral {
-        String message =disponibles ? "Getting code free to  idEmpresaEmpleador:"+idEmpresaEmpleador :
-                "Getting code assigned to  idEmpresaEmpleador:"+idEmpresaEmpleador;
+
+	public List<CodigoDescuento> getCodigoDescuentoByPlan(boolean disponibles, int idEmpresaPlan) throws ErrorGeneral {
+        String message =disponibles ? "buscando codigos libres para  idEmpresaPlan:" +idEmpresaPlan :
+                "buscando codigos asigandos para  idEmpresaPlan:"+idEmpresaPlan;
         LOG.info(message);
-        List<CodigoDescuento> codigosDescuento = null;
-        // obtenemos la session
-        Session session = null;
-        try {
-            session = this.getSession();
-            // indicamos los criterios de busqueda (criteria query)
-            @SuppressWarnings("deprecation")
-			Criteria criteria = session.createCriteria(CodigoDescuento.class);
-            // restricciones
-            Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
-            if (!disponibles) {
-                // negamos el criterio de no asignado (si asignado) en caso de que se hallan solictado lo contrario
-                noAsignado = Restrictions.not(noAsignado);
-            }
-            // agregamos criterio de clave foranea
-            Criterion empresaEmpleadorFk = Restrictions.eq("empresaEmpleador.id", idEmpresaEmpleador);
-            criteria.add(noAsignado);
-            criteria.add(empresaEmpleadorFk);
-            if (periodicidad != "all")
-            {
-                Criterion criterioPeriodicidad = Restrictions.eq("periodicidad",periodicidad);
-                criteria.add(criterioPeriodicidad);
-            }
-            criteria.addOrder(Order.asc("id"));
-            // obtenemos la lista segun los criterios dados
-            codigosDescuento = criteria.list();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            System.err.println("Error obtenerCodigosDisponiblesPorEmpresaEmpleador");
-            e.printStackTrace();
-            throw new ErrorGeneral(500,"Error quering codes");
-         } finally {
-            // cerramos la sesión de BD
-            this.closeSession(session);
-        }
-        message = disponibles ? "There are "+codigosDescuento.size()+" codes free" :
-                "There are "+codigosDescuento.size()+" codes assigned";
+        Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
+        if (!disponibles) {noAsignado = Restrictions.not(noAsignado);}
+        Criterion idEmpresaPlanFk = Restrictions.eq("idEmpresaPlan", idEmpresaPlan);
+        this.filters.add(noAsignado);
+        this.filters.add(idEmpresaPlanFk);
+        List<CodigoDescuento> listCodigosDescuento = this.getRegisters("id");
+        message = disponibles ? "hay "+listCodigosDescuento.size()+" codigos libres" :
+                "hay "+listCodigosDescuento.size()+" codigos asignados";
         LOG.info(message);
-        return codigosDescuento;
+        return listCodigosDescuento;
     }
-	
-	/**
-	 * Método que permite obtener un codigo de descuento por medio del filtro de codigo
-	 * @param codigo
-	 * @return
-	 * @throws Exception
-	 */
+
 	public CodigoDescuento obtenerCodigoDescuentoPorCodigo(String codigo) throws ErrorGeneral {
-        LOG.info("Obteniendo codigos de descuento");
-        CodigoDescuento codigosDescuento = null;
-        // obtenemos la session
-        Session session = null;
-        try {
-        	session = this.getSession();
-			// indicamos los criterios de busqueda (criteria query)
-			@SuppressWarnings("deprecation")
-			Criteria criteria = session.createCriteria(CodigoDescuento.class);
-			
-			// restricciones
-			Criterion codigoCr = Restrictions.eq("codigo", codigo);
-			criteria.add(codigoCr);
-			
-			// obtenemos la lista segun los criterios dados
-			Object resUnique = criteria.uniqueResult();
-			codigosDescuento = (null != resUnique)? (CodigoDescuento) criteria.uniqueResult() : null;
-			session.getTransaction().commit();
-        } catch (Exception e) {
-            throw new ErrorGeneral(500,"Error en DAO, obtener codigo ." + "\n" + e.getMessage());
-        } finally {
-            // cerramos la sesión de BD
-            this.closeSession(session);
-        }
-        return codigosDescuento;
+        LOG.info("Obteniendo el codigo de descuento: "+codigo);
+        Criterion codigoCr = Restrictions.eq("codigo", codigo);
+        this.filters.add(codigoCr);
+        return this.getRegisters("id").get(0);
     }
-	
-	
+
     
 }
