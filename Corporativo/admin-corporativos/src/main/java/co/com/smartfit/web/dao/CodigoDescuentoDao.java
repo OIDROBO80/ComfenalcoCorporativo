@@ -32,16 +32,19 @@ public class CodigoDescuentoDao extends GenericDao<CodigoDescuento> {
         empresaEmpleadorXPlanDao = new EmpresaEmpleadorXPlanDao();
     }
 
-    public List<CodigoDescuento> obtenerCodigosDisponiblesPorPlan(boolean disponibles, int idEmpresaPlan) throws ErrorGeneral {
+    public List<CodigoDescuento> obtenerCodigosDisponiblesPorPlan(boolean disponibles, Integer idEmpresaPlan) throws ErrorGeneral {
         String message =disponibles ? "Obteniendo listado de codigos disponibles para el IdEmpresaEmpleadorPlan:"+idEmpresaPlan :
                 "Obteniendo listado de codigos NO disponibles para el IdEmpresaEmpleadorPlan:"+idEmpresaPlan;
+        LOG.info(message);
         Criterion empresaEmpleadorFk = Restrictions.eq("idEmpresaPlan", idEmpresaPlan);
         Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
         if (!disponibles) {
             // negamos el criterio de no asignado (si asignado) en caso de que se hallan solictado lo contrario
             noAsignado = Restrictions.not(noAsignado);
         }
+        this.filters = new ArrayList<>();
         this.filters.add(noAsignado);
+        this.filters.add(empresaEmpleadorFk);
         List<CodigoDescuento> codigosDescuento = this.getRegisters("id");
         return codigosDescuento;
     }

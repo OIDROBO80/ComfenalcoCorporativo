@@ -619,7 +619,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 						boolean condigoAsignado = this.codigoEstaAsignado(afiliadoId);
 						if (!condigoAsignado)
 						{
-							rs = this.asignarCodigoConvenioAfiliado(afiliadoModel.getEmpresaEmpleadorPlan().getIdEmpresaEmpleador(),
+							rs = this.asignarCodigoConvenioAfiliado(afiliadoModel.getEmpresaEmpleadorPlan().getId(),
 									asignarCodigoConvenioAfiliadoRq);
 							if (!CONSUMO_SUCESS.equals(rs.getCodigoRespuesta())) {
 								LOG.info("Se presenta un error asignando el codigo al afiliado");

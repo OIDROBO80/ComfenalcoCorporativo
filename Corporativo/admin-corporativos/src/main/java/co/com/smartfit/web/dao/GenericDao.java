@@ -259,7 +259,7 @@ public class GenericDao<E> {
 		try {
 			Session sesion = this.getHibernateSession();
 			Criteria criteria =  sesion.createCriteria(clazz);
-			for (Criterion filter:filters) {
+			for (Criterion filter:this.filters) {
 				criteria.add(filter);
 			}
 			criteria.addOrder(Order.asc(fieldOrder));

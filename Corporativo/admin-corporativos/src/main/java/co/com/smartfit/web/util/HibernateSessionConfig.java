@@ -17,29 +17,23 @@ public class HibernateSessionConfig {
 
     public static HibernateSessionConfig getInstance() {
         if (null == instancia) {
-            LOG.info("HibernateSessionConfig CREADA");
             instancia = new HibernateSessionConfig();
         }
-        LOG.info("HibernateSessionConfig ENTREGADA");
         return instancia;
     }
 
     public Session getSession() throws ErrorGeneral {
         try {
             if (null == factory) {
-                LOG.info("HibernateSessionConfig CREA factory");
                 configuration = new Configuration();
                 configuration.configure("/co/com/smartfit/web/configuration/hibernate.cfg.xml");
                 factory = configuration.buildSessionFactory();
             }
 
             try {
-                LOG.info("SESSION CURRENT: ");
                 session = factory.getCurrentSession();
             } catch (HibernateException ex) {
-                LOG.info(" TRY OPEN SESSION: " + ex.getMessage());
                 session = factory.openSession();
-                LOG.info("OPEN SESSION: ");
 
             }
         } catch (HibernateException e) {
@@ -51,7 +45,6 @@ public class HibernateSessionConfig {
     public void closeSession() {
         try {
             if (session != null && session.isOpen()) {
-                LOG.info("SESSION CLOSE: ");
                 session.close();
             }
         } catch (HibernateException e) {
