@@ -41,8 +41,8 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
             // restricciones
             Criterion documento = Restrictions.eq("documentoNumero", numeroDoc);
             // agregamos criterio de clave foranea
-            Criterion tipoDocFk = Restrictions.eq("tipoDocumentoIdentidad.id", idTipoDoc);
-            Criterion membresiaFk = Restrictions.eq("membresia.id", idMembresia);
+            Criterion tipoDocFk = Restrictions.eq("documentoTipo", idTipoDoc);
+            Criterion membresiaFk = Restrictions.eq("idMembresia", idMembresia);
             criteria.add(documento);
             criteria.add(tipoDocFk);
             criteria.add(membresiaFk);

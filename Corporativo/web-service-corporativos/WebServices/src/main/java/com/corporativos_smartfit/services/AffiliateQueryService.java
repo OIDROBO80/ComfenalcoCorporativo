@@ -4,13 +4,7 @@ package com.corporativos_smartfit.services;
 import com.corporativos_smartfit.dao.*;
 import com.corporativos_smartfit.dto.*;
 import com.corporativos_smartfit.entities.*;
-import com.corporativos_smartfit.enums.Periodicidad;
-import com.corporativos_smartfit.util.Util;
-
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AffiliateQueryService extends AffiliateService {
     private AffiliateDocumentRequest affiliateDocumentRequest;

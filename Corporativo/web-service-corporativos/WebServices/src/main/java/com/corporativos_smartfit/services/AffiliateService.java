@@ -128,7 +128,7 @@ public class AffiliateService {
             Planes planAsignado = lastCodigoDescuentoAsignado.getEmpresaEmpleadorXPlan().getPlan();
             Date fechadeAsignado = lastEmpresaAfiliadoXCodigoDescuentoAsignado.getFechaAsignacion();
             LOG.info("El afiliado tiene el ultimo codigo asignado con plan : "+planAsignado.getNombre()+
-                    "asignado a "+planAsignado.getPeriocidad()+" dias y con fecha de asignacion:"+fechadeAsignado);
+                    " asignado a "+planAsignado.getPeriocidad()+" dias y con fecha de asignacion:"+fechadeAsignado);
             Date fechaInicialToValidate = Util.addDays(hoy,-(planAsignado.getPeriocidad()-planAsignado.getDiasValidacion()));
             Date fechaFinalToValidate = Util.addDays(hoy,0);
             LOG.info("Las fecha utilizadas para validar fueron : "+fechaInicialToValidate+" y "+fechaFinalToValidate);

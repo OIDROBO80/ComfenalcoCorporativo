@@ -4,7 +4,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.corporativos_smartfit.dao.CodigoDescuentoDao;
 import com.corporativos_smartfit.dto.*;
 import com.corporativos_smartfit.services.AffiliateQueryService;
 import com.corporativos_smartfit.services.AffiliateService;

@@ -14,6 +14,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ public class CodigoDescuentoDao extends GenericDao<CodigoDescuento> {
         Criterion noAsignado = Restrictions.eqOrIsNull("asignado", false);
         if (!disponibles) {noAsignado = Restrictions.not(noAsignado);}
         Criterion idEmpresaPlanFk = Restrictions.eq("idEmpresaPlan", idEmpresaPlan);
+        this.filters = new ArrayList<>();
         this.filters.add(noAsignado);
         this.filters.add(idEmpresaPlanFk);
         List<CodigoDescuento> listCodigosDescuento = this.getRegisters("id");
