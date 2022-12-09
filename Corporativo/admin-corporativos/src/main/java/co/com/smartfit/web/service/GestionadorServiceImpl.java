@@ -15,7 +15,8 @@ public class GestionadorServiceImpl implements GestionadorService {
 	
 	private final String ROL_ADMINISTRATIVO = "ROLE_ADMIN";
 	private final String ROL_CORPORATIVO = "ROLE_CORP";
-	private final String ROL_CORPORATIVO2 = "ROLE_CORP2";
+	private final String ROL_ADMINISTRATIVO2 = "ROLE_ADMIN2";
+	private final String ROL_EMPRESA = "ROLE_COMPANY";
 
 	@Override
 	public boolean esRolAdministrativo(String username) {
@@ -36,12 +37,22 @@ public class GestionadorServiceImpl implements GestionadorService {
 	}
 
 	@Override
-	public boolean esRolCorporativo2(String username) {
+	public boolean esRolAdministrativo2(String username) {
 		UsersDao usersDao = new UsersDao();
 		Users user = usersDao.obtenerUsuario(username);
 		UserRoles rolesUsuario = user.getUserRoles();
-		boolean isRol = (null != rolesUsuario && rolesUsuario.getRole().equals(ROL_CORPORATIVO2))? true : false;
+		boolean isRol = (null != rolesUsuario && rolesUsuario.getRole().equals(ROL_ADMINISTRATIVO2))? true : false;
 		return isRol;
 	}
+
+	@Override
+	public boolean esRolEmpresa(String username) {
+		UsersDao usersDao = new UsersDao();
+		Users user = usersDao.obtenerUsuario(username);
+		UserRoles rolesUsuario = user.getUserRoles();
+		boolean isRol = (null != rolesUsuario && rolesUsuario.getRole().contains(ROL_EMPRESA))? true : false;
+		return isRol;
+	}
+
 
 }

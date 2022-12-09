@@ -15,5 +15,6 @@ public interface GestionadorService {
 	
 	boolean esRolAdministrativo(String username);
 	boolean esRolCorporativo(String username);
-	boolean esRolCorporativo2(String username);
+	boolean esRolAdministrativo2(String username);
+	boolean esRolEmpresa(String username);
 }

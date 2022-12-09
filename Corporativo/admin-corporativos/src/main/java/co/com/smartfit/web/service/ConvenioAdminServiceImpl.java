@@ -408,9 +408,8 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 		
 			EmpresaEmpleadorModel empresa = model.getEmpresaEmpleador();
 			String[] fila = null;
-
+			LOG.info("tipoDocumentoIdentidad: " + tipoDocumentoIdentidad + " documentoNumero: " + documentoNumero );
 			// obtenemos los codigos
-			LOG.info("tipoDocumentoIdentidad: " + tipoDocumentoIdentidad + " documentoNumero: " + documentoNumero);
 			List<CodigoDescuentoModel> codigos = model.getCodigosAsignados();
 			for (CodigoDescuentoModel codigo : codigos) {
 				fila = new String[7];
@@ -422,6 +421,7 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 					fila[4] = empresa.getRazonSocial();
 				}
 				fila[5] = codigo.getCodigo();
+				fila[6] = codigo.getFechaAsignacion().toString();
 				filas.add(fila);
 			}
 		}
@@ -1108,17 +1108,46 @@ public class ConvenioAdminServiceImpl implements ConvenioAdminService {
 	}
 
 	@Override
-	public InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative() throws ErrorGeneral {
+	public InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative( String username) throws ErrorGeneral {
 		LOG.info("INIT getInitialInformationToCreateCorporative" );
 		InformationInitialToCreateCompanyRs response  = new InformationInitialToCreateCompanyRs();
 		PlanesDao planesDao = new PlanesDao();
 		PlanesEmpresaDao planesEmpresaDao = new PlanesEmpresaDao();
+		EmpresaEmpleadorDao empresaEmpleadorDao = new EmpresaEmpleadorDao();
 		response.setListMembresias(this.obtenerMembresias());
 		response.setListPlanes(planesDao.obtenerTodosEntidades());
 		response.setListPlanesPorEmpresa(planesEmpresaDao.obtenerTodosEntidades());
+		response.setListEmpresas(this.obtenerEmpresas());
+		response.setCanCreatePlan(this.userCanCreatePlan(username));
 		LOG.info("END getInitialInformationToCreateCorporative" );
 		return response;
 	}
+
+	private boolean userCanCreatePlan( String userName){
+		GestionadorService gestionadorService = new GestionadorServiceImpl();
+		try {
+			return gestionadorService.esRolAdministrativo2(userName);
+		} catch (Exception e){
+			LOG.info("fail validanting if user can create plan -> ",e);
+			return false;
+		}
+	}
+	private List<EmpresaEmpleadorModel> obtenerEmpresas() {
+		List<EmpresaEmpleadorModel> response = new ArrayList<>();
+		try {
+			EmpresaEmpleadorDao dao = new EmpresaEmpleadorDao();
+			List<EmpresaEmpleador> entidades = dao.obtenerTodosEntidades();
+			for (EmpresaEmpleador entidad : entidades) {
+				EmpresaEmpleadorModel modelo = mapearEmpresaEmpleadorModel(entidad);
+				response.add(modelo);
+			}
+		} catch (Exception e) {
+			LOG.error("Error en bean-obtenerMembresias, al obtener membresias", e);
+
+		}
+		return response;
+	}
+
 
 	@Override
 	public List<MembresiaModel> obtenerMembresias() {

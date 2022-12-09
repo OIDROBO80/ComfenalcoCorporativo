@@ -26,6 +26,8 @@
         vm.tableDataDiscountCodes = [];
         vm.errorCreatingPlan='';
         vm.errorAsignandoPlanAEmpresa='';
+        vm.rolesByUser=[];
+        vm.canCreatePlan =false;
 
         vm.logout = logout;
         vm.loadDiscountCodes = loadDiscountCodes;
@@ -34,13 +36,11 @@
         vm.imageUpload = imageUpload;
         vm.createPlan = createPlan;
         vm.asignarPlanAEmpresa=asignarPlanAEmpresa;
-        vm.getEmpresas =getEmpresas;
 
         onInit();
 
         function onInit() {
             getInformationInitialToCreateCompany();
-            getEmpresas();
         }
 
         function logout() {
@@ -142,26 +142,14 @@
                     alert("Ha ocurrido un error interno, por favor intenta de nuevo más tarde.")
                     return;
                 }
-                console.info('RESPONSE getInformationInitialToCreateCompany',response);
+
                 vm.listMembresias = response.listMembresias;
                 vm.listPlanesPorEmpresa = response.listPlanesPorEmpresa;
                 vm.listPlanes = response.listPlanes;
+                vm.listEmpresas = response.listEmpresas;
+                vm.canCreatePlan = response.canCreatePlan;
             });
         }
-
-        function getEmpresas() {
-            console.info('ENTRO PAGE');
-            adminService.getEmpresasConvenio()
-                .then(function(response){
-                    if(response.codigoRespuesta === "500"){
-                        alert("Ha ocurrido un error interno, por favor intenta de nuevo mas tarde.")
-                        return;
-                    }
-                    vm.listEmpresas = response.empresas;
-                });
-        }
-
-
     }
 
     crearEmpresaRespuestaController.$inject = [ 'adminService', 'csvProvider' ];
@@ -170,7 +158,6 @@
         var vm = this;
         vm.tableFallidos = [];
         vm.tableSuccess = [];
-
         vm.logout = logout;
         vm.downloadFallidos = downloadFallidos;
         vm.changeView = adminService.goPath;

@@ -28,7 +28,7 @@
 					vm.companies = response.empresas;
 				});
 		}
- 
+
 		function goDetail(path, company) {
 			adminService.goPath(path + company.documentoTipo + '&' + company.documentoNumero + '&' + company.membresia);
 		}

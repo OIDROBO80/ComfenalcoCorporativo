@@ -13,25 +13,28 @@ public class Users implements java.io.Serializable {
     private String username;
     private String password;
     private byte enabled;
+    private Integer idCompany;
     private Set empresas = new HashSet(0);
 
     public Users() {
         super();
     }
 
-    public Users(UserRoles userRoles, String username, String password, byte enabled) {
+    public Users(UserRoles userRoles, String username, String password, byte enabled, Integer idCompany) {
         this.userRoles = userRoles;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
+        this.idCompany = idCompany;
     }
 
-    public Users(UserRoles userRoles, String username, String password, byte enabled, Set empresas) {
+    public Users(UserRoles userRoles, String username, String password, byte enabled, Set empresas,Integer idCompany) {
         this.userRoles = userRoles;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
         this.empresas = empresas;
+        this.idCompany = idCompany;
     }
 
     public Integer getIdUser() {
@@ -82,4 +85,7 @@ public class Users implements java.io.Serializable {
         this.empresas = empresas;
     }
 
+    public Integer getIdCompany() { return idCompany; }
+
+    public void setIdCompany(Integer idCompany) { this.idCompany = idCompany; }
 }

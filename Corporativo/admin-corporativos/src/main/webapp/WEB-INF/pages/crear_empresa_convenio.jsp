@@ -50,13 +50,13 @@ crossorigin="anonymous">
 				<ol class="breadcrumb section-menu">
                     <li class="active"><a>Crear Empresa</a></li>
 					<li><a ng-click="adminCtrl.changeView('listar_convenio_empresas')">Listar Empresas</a></li>
-					<li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li>
+					<!--li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li-->
 				</ol>
 			</div>
 		</div>
     </section>
     <section class="generic-container">
-	<div class="col-md-12">
+	<div class="col-md-12" ng-if='adminCtrl.canCreatePlan'>
 		<div class="panel panel-default" id="divCrearPlan">
 			<div class="panel-heading">
 				<span class="lead">Crear Plan</span>
@@ -184,7 +184,7 @@ crossorigin="anonymous">
                 <span class="lead">Registrar empresa convenio</span>
             </div>
             <div class="panel-body">
-                <form class="form_crear_empresa" role="form" name="formCrearEmp" method="post" action="crearConvenioEmpresa">
+                <form class="form_crear_empresa" role="form" name="formCrearEmp" method="post" action="crearEmpresaV2">
 					<div class="row">
 	                    <div class="form-group col-xs-12 col-sm-6">
 	                        <label for="tipoDocumento">Tipo de documento</label>
@@ -289,66 +289,11 @@ crossorigin="anonymous">
 	                    <div class="form-group col-xs-12 col-sm-6">
 							<img class="thumb" ng-src="{{adminCtrl.formData.logoImagen}}" alt="Imágen del logo" data-ng-if="adminCtrl.formData.logoImagen" style="max-width: 150px; max-height: 150px;"/>
 	                    </div>
-	                </div>
-                    <div class="row">
-						<!--div class="form-group col-xs-12 col-sm-6">
-	                        <label for="discountCodes">Códigos (csv)</label>
-	                        <input id="csvDiscountCodes" type="file" class="form-control" 
-	                        ng-model-instant onchange="angular.element(this).scope().adminCtrl.loadDiscountCodes()" required
-	                        data-ng-class='{ error: formCrearEmp.csvDiscountCodes.$dirty && formCrearEmp.csvDiscountCodes.$invalid }'/>
-	                        <span ng-show="formCrearEmp.csvDiscountCodes.$dirty && formCrearEmp.csvDiscountCodes.$invalid" style="opacity: 0.3;">Archivo en formato csv</span>
-	                        <span data-ng-if="adminCtrl.tableDataDiscountCodes.length > 0" class="">Se van a cargar {{adminCtrl.tableDataDiscountCodes.length}} códigos</span>
-	                    </div--!>
-						<div class="form-group col-xs-12 col-sm-6">
-							<label for="plan">Plan</label>
-							<select id="plan"
-									class="form-control margin-select" name="plan" placeholder="Plan" data-ng-model='adminCtrl.formData.plan' required
-									data-ng-class='{ error: formCrearEmp.plan.$dirty && formCrearEmp.plan.$invalid }'>
-								<option style="display:none" value="">Seleccione una opci&oacute;n</option>
-								<option ng-repeat="membresia in adminCtrl.tableDataPlanByEmpresa" value="{{membresia.id}}">{{membresia.nombrePlan}}</option>
-							</select>
-							<span ng-show="formCrearEmp.plan.$dirty && formCrearEmp.plan.$invalid" style="opacity: 0.3;">Seleccione una opción</span>
-						</div>
-	                    <div class="form-group col-xs-12 col-sm-6">
-	                        <label for="employees">Empleados (csv)</label>
-	                        <input id="csv" type="file" class="form-control" 
-	                        ng-model-instant onchange="angular.element(this).scope().adminCtrl.loadEmployees()" required
-	                        data-ng-class='{ error: formCrearEmp.csv.$dirty && formCrearEmp.csv.$invalid }'/>
-	                        <span ng-show="formCrearEmp.csv.$dirty && formCrearEmp.csv.$invalid" style="opacity: 0.3;">Archivo en formato csv</span>
-	                    </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                    	<label class="titleEmployees">Lista de empleados</label>
-                    </div>
-                    <div data-ng-if="adminCtrl.tableData.length > 0" class="form-group col-xs-12 table-employees">
-                        
-                        <table data-ng-if="adminCtrl.tableData.length > 0" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Tipo de documento</th>
-                                    <th>Documento</th>
-                                    <th>Nombre</th>
-                                    <th>Email</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr data-ng-repeat="employee in adminCtrl.tableData">
-                                    <td>{{$index + 1}} </td>
-                                    <td>{{employee | pos:0 | tipoDocumento}}</td>
-                                    <td>{{employee | pos:1}}</td>
-                                    <td>{{employee | pos:2}}</td>
-                                    <td>{{employee | pos:3}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+					</div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <input id="codigosCsv" type="hidden" name="codigosCsv" value="{{adminCtrl.formData.codigosCsv}}"/>
-                    <input id="afiliadosCsv" type="hidden" name="afiliadosCsv" value="{{adminCtrl.formData.afiliadosCsv}}"/>
                     <input id="logoImagen" type="hidden" name="logoImagen" value="{{adminCtrl.formData.logoImagen}}"/>
                     <div class="form-group col-xs-12">
-                        <button type="submit" class="btn btn-primary" ng-disabled="formCrearEmp.$invalid || !adminCtrl.formData.codigosCsv || !adminCtrl.formData.afiliadosCsv || !adminCtrl.formData.logoImagen">Guardar</button>
+                        <button type="submit" class="btn btn-primary" ng-disabled="formCrearEmp.$invalid  || !adminCtrl.formData.logoImagen">Guardar</button>
                     </div>
                 </form>
             </div>

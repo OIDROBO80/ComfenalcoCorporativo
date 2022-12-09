@@ -1,16 +1,9 @@
 package co.com.smartfit.web.business.rs;
 
 import co.com.smartfit.web.entities.Planes;
-import co.com.smartfit.web.model.EmpresaAfiliadoModel;
-
-import java.util.Date;
 import java.util.List;
 
-/**
- * @author alejandro.areiza
- * @since 15/09/2017
- * @version 1.0
- */
+
 public class CrearPlanRs {
 
 	private int codigoRespuesta;

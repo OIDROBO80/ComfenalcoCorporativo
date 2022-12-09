@@ -21,6 +21,8 @@ public class InformationInitialToCreateCompanyRs {
 	private List<PlanesEmpresa> listPlanesPorEmpresa;
 	private List<Planes> listPlanes;
 	private List<MembresiaModel> listMembresias;
+	private List<EmpresaEmpleadorModel> listEmpresas;
+	private boolean canCreatePlan;
 	public InformationInitialToCreateCompanyRs() {
 
 	}
@@ -65,4 +67,19 @@ public class InformationInitialToCreateCompanyRs {
 		this.listMembresias = listMembresias;
 	}
 
+	public List<EmpresaEmpleadorModel> getListEmpresas() {
+		return listEmpresas;
+	}
+
+	public void setListEmpresas(List<EmpresaEmpleadorModel> listEmpresas) {
+		this.listEmpresas = listEmpresas;
+	}
+
+	public boolean isCanCreatePlan() {
+		return canCreatePlan;
+	}
+
+	public void setCanCreatePlan(boolean canCreatePlan) {
+		this.canCreatePlan = canCreatePlan;
+	}
 }

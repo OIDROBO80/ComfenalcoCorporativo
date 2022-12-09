@@ -4,6 +4,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 import com.corporativos_smartfit.dto.*;
 import com.corporativos_smartfit.services.AffiliateQueryService;
 import com.corporativos_smartfit.services.AffiliateService;
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  * Clase para hacer el routing de los servicios
  */
 
-@Path("/afiliados")
+@Path("afiliados")
 public class AffiliateController {
 	private static final Logger LOG = Logger.getLogger(AffiliateController.class);
 

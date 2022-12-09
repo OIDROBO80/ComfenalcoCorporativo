@@ -23,7 +23,6 @@ public class PlanesDao extends GenericDao<Planes> {
 
     public Planes obtenerPlanById(int id ) throws ErrorGeneral {
         LOG.info("Obteniendo Plan para el codigo de descuento");
-        // obtenemos la session
         List<Planes> planes = null;
         Planes plan = null;
         Session session = null;
@@ -31,7 +30,6 @@ public class PlanesDao extends GenericDao<Planes> {
 
         try {
             session = this.getSession();
-            // indicamos los criterios de busqueda (criteria query)
             Query query = session.createQuery(hqlQuery);
             query.setParameter("id", id);
             planes = query.getResultList();
@@ -41,7 +39,6 @@ public class PlanesDao extends GenericDao<Planes> {
             e.printStackTrace();
             throw new ErrorGeneral(500,"Error en DAO Planes, obtenerPlanByIdEmpresaEmpleadorXPlan ." + "\n" + e.getMessage());
         } finally {
-            // cerramos la sesión de BD
             this.closeSession(session);
         }
         LOG.info("El plan encontrado es "+ plan.getNombre()+ " con periocidad "+plan.getPeriocidad());

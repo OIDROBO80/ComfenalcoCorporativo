@@ -39,13 +39,7 @@ public class Util {
 		return pathDir;
 	}
 
-	/**
-	 * Método que permite guardar una imagen codificada en Base64 en el servidor
-	 * 
-	 * @param {datoBase64}
-	 *            String con la imagen codificada
-	 * @return El path donde quedó guardada la imagen
-	 */
+
 	public static String guardarBase64Archivo(String base64String) {
 		// Obtener la ruta del directorio de imagenes
 		String so = System.getProperty("os.name");
@@ -89,13 +83,7 @@ public class Util {
 		return nameImage;
 	}
 
-	/**
-	 * Método que permite generar una cadena aleatoria
-	 * 
-	 * @param count
-	 *            Cantidad de caracteres de la cadena
-	 * @return String aleatorio
-	 */
+
 	public static String randomAlphaNumeric(int count) {
 		StringBuilder builder = new StringBuilder();
 		while (count-- != 0) {
@@ -105,12 +93,7 @@ public class Util {
 		return builder.toString();
 	}
 
-	/**
-	 * Método que permite extraer los bytes de una imagen
-	 * @param pathImage
-	 * @return
-	 * @throws IOException
-	 */
+
 	public static byte[] extractBytes(String pathImage) throws IOException {
 		// open image
 		File imgPath = new File(pathImage);
@@ -123,12 +106,7 @@ public class Util {
 		return (data.getData());
 	}
 	
-	/**
-	 * Permite añadir dias a una fecha
-	 * @param date
-	 * @param days
-	 * @return
-	 */
+
 	public static Date addDays(Date date, int days){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);

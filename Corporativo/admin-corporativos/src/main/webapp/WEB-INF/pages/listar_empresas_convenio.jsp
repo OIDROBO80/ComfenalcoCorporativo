@@ -44,14 +44,13 @@ crossorigin="anonymous">
 <body data-ng-app="app">
 <div data-ng-controller="listarEmpresaConvenioController as adminCtrl">
     <jsp:include page="header.jsp"></jsp:include>
-
     <section>
         <div class="panel panel-default">
             <div class="panel-body">
                 <ol class="breadcrumb section-menu">
                     <li class="active"><a ng-click="adminCtrl.changeView('crear_convenio_empresa')">Crear Empresa</a></li>
                     <li><a>Listar Empresas</a></li>
-                    <li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li>
+                    <!--li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li-->
                 </ol>
             </div>
         </div>
@@ -68,7 +67,6 @@ crossorigin="anonymous">
                     class="form-control" name="document"
                     placeholder="Buscar..."
                     data-ng-model='adminCtrl.formData.search'>
-
                     <div class="companies">
                         <table data-ng-if="adminCtrl.companies.length > 0" class="table table-bordered">
                             <thead>

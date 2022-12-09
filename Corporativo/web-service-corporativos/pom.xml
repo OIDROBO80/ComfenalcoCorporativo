@@ -9,7 +9,6 @@
 	<modules>
 		<module>WebServices</module>
 		<module>App</module>
-		<module>admin</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

@@ -18,7 +18,7 @@ var="angularresJs" />
 <spring:url value="/resources/js/app.module.convenios.js" var="starterJs" />
 <spring:url value="/resources/js/providers/csv.provider.js" var="csvProvider" />
 <spring:url
-value="/resources/js/controllers/listar_empleados_por_empresa_convenio.controller.js"
+value="/resources/js/controllers/vista_empresa.controller.js"
 var="adminJs" />
 <spring:url value="/resources/js/services/admin.services.js"
 var="servicesJs" />
@@ -26,7 +26,7 @@ var="servicesJs" />
 var="providerJs" />
 <spring:url value="/resources/img/logoFooter.png" var="logoFooter" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Lista de empleados</title>
+<title>Vista Empresa</title>
 <link rel="stylesheet"
 href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
@@ -43,19 +43,8 @@ crossorigin="anonymous">
 
 </head>
 <body data-ng-app="app">
-<div data-ng-controller="listarEmpleadosEmpresaController as adminCtrl">
+<div data-ng-controller="vistaEmpresaController as adminCtrl">
     <jsp:include page="header.jsp"></jsp:include>
-    <section>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <ol class="breadcrumb section-menu">
-                    <li class="active" ng-click="adminCtrl.changeView('crear_convenio_empresa')"><a>Crear Empresa</a></li>
-                    <li ng-click="adminCtrl.changeView('listar_convenio_empresas')"><a>Listar Empresas</a></li>
-                    <!--li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li-->
-                </ol>
-            </div>
-        </div>
-    </section>
     <section class="generic-container">
     <div class="col-md-12">
         <div class="panel panel-default" id="divCrearEmp">

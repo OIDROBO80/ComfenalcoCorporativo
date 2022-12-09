@@ -68,7 +68,7 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
         try {
             session = this.getSession();
             // indicamos los criterios de busqueda (criteria query)
-            Criteria criteria = session.createCriteria(com.corporativos_smartfit.entities.EmpresaEmpleador.class);
+            Criteria criteria = session.createCriteria(EmpresaEmpleador.class);
             // restricciones
             Criterion idFk = Restrictions.eq("id", id);
             // agregamos criterio de clave foranea
@@ -86,4 +86,6 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
         }
         return empresaEmpleador;
     }
+
+
 }

@@ -50,7 +50,7 @@ crossorigin="anonymous">
                 <ol class="breadcrumb section-menu">
                     <li class="active" ng-click="adminCtrl.changeView('crear_convenio_empresa')"><a>Crear Empresa</a></li>
                     <li ng-click="adminCtrl.changeView('listar_convenio_empresas')"><a>Listar Empresas</a></li>
-                    <li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li>
+                    <!--li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li-->
                 </ol>
             </div>
         </div>
@@ -296,6 +296,8 @@ crossorigin="anonymous">
         </div>
     </div>
     <!-- END Modal CodigoDescuento Import -->
+
+
 
 </div>
 <script

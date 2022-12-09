@@ -20,5 +20,8 @@
         <property name="enabled" type="byte">
             <column name="enabled" not-null="true" />
         </property>
+        <property name="idCompany" type="java.lang.Integer">
+            <column name="id_company" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

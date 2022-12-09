@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="co.com.smartfit.web.entities.CantidadCodigosPorPlan" table="cantidad_codigos_por_plan" optimistic-lock="version">
+        <id name="id" type="java.lang.String">
+            <column name="id" unique="true" not-null="true"/>
+            <generator class="identity"/>
+        </id>
+        <property name="cantidadDeCodigos" type="java.lang.Integer">
+            <column name="cantidadDeCodigos"/>
+        </property>
+        <property name="nombrePlan" type="java.lang.String">
+            <column name="nombrePlan"/>
+        </property>
+        <property name="documentoEmpresa" type="java.lang.String">
+            <column name="documentoEmpresa"/>
+        </property>
+        <property name="asignado" type="java.lang.Boolean">
+            <column name="asignado"/>
+        </property>
+    </class>
+</hibernate-mapping>

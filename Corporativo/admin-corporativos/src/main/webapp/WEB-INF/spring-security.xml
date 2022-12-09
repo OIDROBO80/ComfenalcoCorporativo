@@ -6,36 +6,37 @@
         <!-- enable csrf protection -->
         <csrf disabled="false" />
         <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/convenios**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/gestionar**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
-        <intercept-url pattern="/mensaje**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP')" />
-        <intercept-url pattern="/j_spring_security_logout**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
-        <intercept-url pattern="/asignados**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/no-asignados**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/find-by-sede**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/find-by-documento**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/find-by-codigo**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/find_afiliado/**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/convenios**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/gestionar**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_ADMIN2','ROLE_COMPANY')" />
+        <intercept-url pattern="/mensaje**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP', 'ROLE_ADMIN2','ROLE_COMPANY')" />
+        <intercept-url pattern="/j_spring_security_logout**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_ADMIN2')" />
+        <intercept-url pattern="/asignados**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/no-asignados**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/find-by-sede**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/find-by-documento**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/find-by-codigo**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/find_afiliado/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
 
-        <intercept-url pattern="/home**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_CORP2')" />
+        <intercept-url pattern="/home**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP','ROLE_ADMIN2','ROLE_COMPANY')" />
         <intercept-url pattern="/corporativo**" access="hasRole('ROLE_CORP')" />
         <intercept-url pattern="listar_empleados" access="hasRole('ROLE_CORP')" />
         <intercept-url pattern="activar_plan_empleado" access="hasRole('ROLE_CORP')" />
         <intercept-url pattern="cambiar_contrasena" access="hasRole('ROLE_CORP')" />
-        <intercept-url pattern="/administrativo**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="listar_convenios" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/administrativo**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="listar_convenios" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN2')" />
         <intercept-url pattern="listar_empresas" access="hasRole('ROLE_ADMIN')" />
 
         <!-- accesos para dministrador de convenios de empresa (corporativos) -->
         <intercept-url pattern="/convenioAdmin**" access="hasRole('ROLE_CORP')" />
-        <intercept-url pattern="/crearConvenioEmpresa**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP')" />
-        <intercept-url pattern="/obtenerConvenioEmpresas**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="/crearConvenioEmpresa**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_CORP', 'ROLE_ADMIN2')" />
+        <intercept-url pattern="/obtenerConvenioEmpresas**" access="hasAnyRole('ROLE_CORP','ROLE_ADMIN2','ROLE_COMPANY')" />
         <intercept-url pattern="/obtenerConvenioAfiliados**" access="hasRole('ROLE_CORP')" />
         <intercept-url pattern="crear_empresa_convenio" access="hasRole('ROLE_CORP')" />
-        <intercept-url pattern="listar_empleados_por_empresa_convenio" access="hasAnyRole('ROLE_CORP','ROLE_CORP2')" />
-        <intercept-url pattern="listar_empresas_convenio" access="hasRole('ROLE_CORP')" />
-        <intercept-url pattern="otro" access="hasRole('ROLE_CORP2')" />
+        <intercept-url pattern="listar_empleados_por_empresa_convenio" access="hasAnyRole('ROLE_CORP','ROLE_ADMIN2')" />
+        <intercept-url pattern="listar_empresas_convenio" access="hasAnyRole('ROLE_CORP', 'ROLE_ADMIN2', 'ROLE_COMPANY')" />
         <intercept-url pattern="/mensaje_convenio**" access="hasRole('ROLE_CORP')" />
+        <intercept-url pattern="vista_empresa" access="hasAnyRole('ROLE_COMPANY')" />
+
 
         <!-- access denied page -->
         <access-denied-handler error-page="/403" />

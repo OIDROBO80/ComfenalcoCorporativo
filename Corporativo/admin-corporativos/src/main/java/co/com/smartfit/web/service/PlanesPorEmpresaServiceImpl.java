@@ -1,4 +1,5 @@
 package co.com.smartfit.web.service;
+import java.util.ArrayList;
 import java.util.function.Predicate;
 import co.com.smartfit.web.dao.*;
 import co.com.smartfit.web.entities.*;
@@ -54,6 +55,15 @@ public class PlanesPorEmpresaServiceImpl implements PlanesPorEmpresaService {
 		}
 		LOG.info("END savePlan" );
 	}
+
+	@Override
+	public List<CantidadCodigosPorPlan>  getlistCodeByPlan(String documentoEmpresa) throws ErrorGeneral {
+		LOG.info("INIT getlistCodeByPlan" );
+		CantidadCodigosPorPlanDao dao = new CantidadCodigosPorPlanDao();
+		LOG.info("ENDING getlistCodeByPlan" );
+		return dao.getListCode(false,documentoEmpresa);
+	}
+
 
 
 }

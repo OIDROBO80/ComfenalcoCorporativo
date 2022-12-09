@@ -67,7 +67,7 @@ public interface ConvenioAdminService {
      */
     ObtenerCodigosAsignadosRs obtenerCodigosAsignados(ObtenerCodigosAsignadosRq rq);
 
-    InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative();
+    InformationInitialToCreateCompanyRs getInitialInformationToCreateCorporative(String username);
     /*CrearPlanRs createPlan(String nombrePlan,Integer dias);*/
     /**
      * Metodo que permite obtener las membresias en BD

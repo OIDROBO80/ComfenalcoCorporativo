@@ -2,9 +2,7 @@ package com.corporativos_smartfit.dao;
 
 
 import com.corporativos_smartfit.dto.ErrorGeneral;
-import com.corporativos_smartfit.entities.EmpresaEmpleadorXPlan;
 import com.corporativos_smartfit.util.HibernateSessionConfig;
-import com.sun.istack.Nullable;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
@@ -142,33 +140,19 @@ public class GenericDao<E> {
 
 	// NUEVOS METODOS CON REFORMAS
 
-	/**
-	 * Metodo que permite obtener una conexion de base de datos mediante HibernateSessionConfig 
-	 * 
-	 * @return Session org.hibernate.Session session para acceso a BD
-	 * @throws Exception
-	 */
 	public Session getSession() throws ErrorGeneral {
 		try {
 			session = hbSessionConfig.getSession();
 			session.beginTransaction();
 		} 
 		catch (Exception e) {
-			// cerramos la sesión de BD
 			hbSessionConfig.closeSession();
 			throw new ErrorGeneral(500,"Error en DAO, al obtener la sesion"+"\n"
 					+ e.getMessage());
 		}
 		return session;
 	}
-	
-	/**
-	 * Metodo que cierra una conexion de base de datos mediante HibernateSessionConfig 
-	 * 
-	 * @param {session} org.hibernate.Session session para acceso a BD
-	 * @return boolean que indica si la sesion fue cerrada correctamente
-	 * @throws Exception
-	 */
+
 	public boolean closeSession(Session sesion) throws ErrorGeneral {
 		boolean close = false;
 		try {			
@@ -183,13 +167,6 @@ public class GenericDao<E> {
 		return close;
 	}
 
-	/**
-	 * Metodo que permite guardar una entidad en BD y directamente obtener su id
-	 * 
-	 * @param entidad E a ser gaurdada en BD
-	 * @return int id en base de datos tras ser guardada la entidad (siempre que sea autoincremental)
-	 * @throws Exception
-	 */
 	public int guardarEntidad(E entidad) throws ConstraintViolationException, Exception {
 		int idEntidad = -1;
 		try {
@@ -204,19 +181,11 @@ public class GenericDao<E> {
 			throw new Exception("Error en DAO, al guardar la entidad. (" + e.toString()+ ")", e);
 		}
 		finally {
-			// cerramos la sesión de BD
 			hbSessionConfig.closeSession();
 		}
 		return idEntidad;
 	}
-	
-	/**
-	 * Metodo que permite actualizar la entidad en BD
-	 * 
-	 * @param entidad E a ser actualizada en BD
-	 * @return boolean indica si el dato fue actualizado exitosamente
-	 * @throws Exception
-	 */
+
 	public boolean actualizarEntidad(E entidad) throws Exception {
 
 		boolean actualizado = false;
@@ -230,7 +199,6 @@ public class GenericDao<E> {
 			throw new Exception("Error en DAO, al actualizar la entidad. (" + e.toString()+ ")", e);
 		}
 		finally {
-			// cerramos la sesión de BD
 			hbSessionConfig.closeSession();
 		}
 		return actualizado;
@@ -253,7 +221,6 @@ public class GenericDao<E> {
 					+ e.getMessage());
 		}
 		finally {
-			// cerramos la sesión de BD
 			hbSessionConfig.closeSession();
 		}
 		return list;

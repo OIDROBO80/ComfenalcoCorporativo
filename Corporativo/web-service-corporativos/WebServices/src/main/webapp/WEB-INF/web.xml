@@ -10,8 +10,8 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<!--init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-	    	<param-value>com.corporativos_smartfit.services</param-value>
-		</init-param -->
+	    	<param-value>com.corporativos_smartfit.controller.AffiliateController</param-value>
+		</init-param-->
 		<init-param>
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
 			<param-value>com.corporativos_smartfit.util.CORSFilter</param-value>

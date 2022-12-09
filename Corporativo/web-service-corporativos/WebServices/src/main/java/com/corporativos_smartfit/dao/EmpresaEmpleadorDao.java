@@ -1,5 +1,5 @@
 package com.corporativos_smartfit.dao;
-// default package
+
 
 
 import com.corporativos_smartfit.dto.ErrorGeneral;
@@ -10,12 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-/**
- * DAO para obtener la entidad EmpresaEmpleador de BD
- * 
- * @see .EmpresaEmpleador
- * @author alejandro.areiza
- */
+
 public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
 
     private static final Logger LOG = Logger.getLogger(EmpresaEmpleadorDao.class);
@@ -24,36 +19,26 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
         super(EmpresaEmpleador.class);
     }
 
-    /**
-     * Metodo que permite obtener una empresa por documento, tipo documento y membresia
-     * 
-     * @param
-     * @return EmpresaEmpleador
-     */
+
     public EmpresaEmpleador obtenerEmpresaPorDocumento(int idTipoDoc, String numeroDoc, int idMembresia) throws ErrorGeneral {
         LOG.info("Obtaining Employer Company entity for the document number: "+numeroDoc+" with membership:"+ idMembresia);
         EmpresaEmpleador empresaEmpleador = new EmpresaEmpleador();
         Session session = null;
         try {
             session = this.getSession();
-            // indicamos los criterios de busqueda (criteria query)
             Criteria criteria = session.createCriteria(EmpresaEmpleador.class);
-            // restricciones
             Criterion documento = Restrictions.eq("documentoNumero", numeroDoc);
-            // agregamos criterio de clave foranea
             Criterion tipoDocFk = Restrictions.eq("documentoTipo", idTipoDoc);
             Criterion membresiaFk = Restrictions.eq("idMembresia", idMembresia);
             criteria.add(documento);
             criteria.add(tipoDocFk);
             criteria.add(membresiaFk);
-            // obtenemos la lista segun los criterios dados
             Object resUnique = criteria.uniqueResult();
             empresaEmpleador = (null != resUnique) ? (EmpresaEmpleador) criteria.uniqueResult() : null;
             session.getTransaction().commit();
         } catch (Exception e) {
             throw new ErrorGeneral(500,"Error obtaining company information for the  number document :"+numeroDoc);
         } finally {
-            // cerramos la sesión de BD
             this.closeSession(session);
         }
         if (empresaEmpleador == null){
@@ -70,13 +55,9 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
         Session session = null;
         try {
             session = this.getSession();
-            // indicamos los criterios de busqueda (criteria query)
             Criteria criteria = session.createCriteria(EmpresaEmpleador.class);
-            // restricciones
             Criterion idFk = Restrictions.eq("id", id);
-            // agregamos criterio de clave foranea
             criteria.add(idFk);
-            // obtenemos la lista segun los criterios dados
             Object resUnique = criteria.uniqueResult();
             empresaEmpleador = (null != resUnique) ? (EmpresaEmpleador) criteria.uniqueResult() : null;
             session.getTransaction().commit();
@@ -84,7 +65,7 @@ public class EmpresaEmpleadorDao extends GenericDao<EmpresaEmpleador> {
             e.printStackTrace();
             throw new ErrorGeneral(500,"Error Obteniendo Empresa Empleador :"+id);
         } finally {
-            // cerramos la sesión de BD
+
             this.closeSession(session);
         }
         return empresaEmpleador;

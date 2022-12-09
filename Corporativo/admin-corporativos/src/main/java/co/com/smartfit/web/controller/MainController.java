@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Validator;
 import javax.ws.rs.core.Context;
 
+import co.com.smartfit.web.business.rq.*;
 import co.com.smartfit.web.business.rs.*;
+import co.com.smartfit.web.entities.CantidadCodigosPorPlan;
 import co.com.smartfit.web.entities.ErrorGeneral;
 import co.com.smartfit.web.entities.Planes;
 import co.com.smartfit.web.entities.PlanesEmpresa;
@@ -42,12 +44,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import co.com.smartfit.web.business.rq.CrearConvenioEmpresaRq;
-import co.com.smartfit.web.business.rq.ObtenerCodigosAsignadosRq;
-import co.com.smartfit.web.business.rq.ObtenerConvenioAfiliadosRq;
-import co.com.smartfit.web.business.rq.ObtenerConvenioEmpresasRq;
-import co.com.smartfit.web.business.rq.ProcesarCsvConvenioAfiliadosRq;
-import co.com.smartfit.web.business.rq.ProcesarCsvConvenioCodigosRq;
 import co.com.smartfit.web.model.EmpresaEmpleadorModel;
 import co.com.smartfit.web.model.MembresiaModel;
 import co.com.smartfit.web.util.Util;
@@ -66,7 +62,7 @@ public class MainController {
     private static final int TAMANO_REGISTROS_PAGINA = 20;
     private static final String ROL_ADMINISTRATIVO_PAGE = "listar_empresas_convenio";
     private static final String ROL_CORPORATIVO_PAGE = "crear_empresa_convenio";
-    private static final String ROL_CORPORATIVO2_PAGE = "listar_empleados_por_empresa";
+    private static final String ROL_COMPANY_PAGE = "vista_empresa";
     private static final String ROL_NODEFINIDO_PAGE = "403";
     private static final String CONSUMO_SUCESS = "200";
     private static final String CONSUMO_DENIED = "403";
@@ -81,6 +77,10 @@ public class MainController {
 
     @Autowired
     ConvenioAdminService convenioAdminService;
+
+
+    @Autowired
+    EmpresaService empresaService;
 
     @Autowired
     PlanesPorEmpresaService planesPorEmpresaService;
@@ -109,15 +109,17 @@ public class MainController {
                 UserDetails userDetail = (UserDetails) auth.getPrincipal();
                 username = userDetail.getUsername();
                 GestionadorService gestionadorService = new GestionadorServiceImpl();
-                if (gestionadorService.esRolAdministrativo(username)) {
+                if (gestionadorService.esRolAdministrativo(username) || gestionadorService.esRolAdministrativo2(username) ) {
                     pageTipoRol = ROL_ADMINISTRATIVO_PAGE;
                 } else if (gestionadorService.esRolCorporativo(username)) {
                         pageTipoRol = ROL_CORPORATIVO_PAGE;
-                } else if (gestionadorService.esRolCorporativo2(username)) {
-                     pageTipoRol =ROL_CORPORATIVO2_PAGE;
+                } else if (gestionadorService.esRolEmpresa(username)) {
+                    pageTipoRol = ROL_COMPANY_PAGE;
                 }
                 String sessionId = request.getRequestedSessionId();
+                LOG.info("sessionId" +sessionId);
                 String token = security.createToken(username, sessionId);
+                LOG.info("token" +token);
                 model.addAttribute("sessionToken", token);
             }
         } catch (Exception e) {
@@ -319,15 +321,30 @@ public class MainController {
         return "mensaje_convenio";
     }
 
+    @RequestMapping(value = "/crearEmpresaV2", method = RequestMethod.POST)
+    public String crearEmpresaNew(HttpServletRequest rq, ModelMap map) throws ServletRequestBindingException {
+        CrearEmpresaRs res = new CrearEmpresaRs();
+        LOG.info("REQUEST [" + rq.getRequestedSessionId() + "] to: " + new Object() {}.getClass().getEnclosingMethod().getName() + ", metodo POST");
+        res = empresaService.crearEmpresa(rq);
+        // mapeamos datos de respuesta
+        map.addAttribute("accion", "EmpresaCrear");
+        map.addAttribute("codigoRespuesta", res.getCodigoRespuesta());
+        map.addAttribute("codigoError", res.getCodigoError());
+        LOG.info("RESPONSE [" + rq.getRequestedSessionId() + "] from: " + new Object() {
+        }.getClass().getEnclosingMethod().getName() + " " + res.getCodigoRespuesta());
+        return "mensaje_convenio";
+    }
+
 
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/getInformationInitialToCreateCompany", method = RequestMethod.GET)
-    public InformationInitialToCreateCompanyRs getInformationInitialToCreateCompany(@Context HttpServletRequest rq) throws ServletRequestBindingException {
+    @RequestMapping(value = "/getInformationInitialToCreateCompany/{userName}", method = RequestMethod.GET)
+    public InformationInitialToCreateCompanyRs getInformationInitialToCreateCompany(@Context HttpServletRequest rq,
+                                                                                    @PathVariable String userName) throws ServletRequestBindingException {
         LOG.info("INIT RESPONSE from: /getInformationInitialToCreateCompany");
         InformationInitialToCreateCompanyRs res = new InformationInitialToCreateCompanyRs();
         try {
-            res  = convenioAdminService.getInitialInformationToCreateCorporative();
+            res  = convenioAdminService.getInitialInformationToCreateCorporative(userName);
             res.setCodigoRespuesta(200);
         } catch (ErrorGeneral e) {
             res.setCodigoRespuesta(e.getStatusCode());
@@ -355,6 +372,27 @@ public class MainController {
             res.setDescription(e.getMessage());
         }
         LOG.info("RESPONSE from: /CrearPlan, codigo: " + res.getCodigoRespuesta());
+        return res;
+    }
+
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/getlistCodeByPlan/{documentoEmpresa}", method = RequestMethod.GET)
+    public CantidadCodigosPorPlanRs getlistCodeByPlan(@Context HttpServletRequest rq,
+                                  @PathVariable String documentoEmpresa) throws ServletRequestBindingException {
+        LOG.info("INIT RESPONSE from: /getlistCodeByPlan");
+        CantidadCodigosPorPlanRs res = new CantidadCodigosPorPlanRs();
+        try {
+            List<CantidadCodigosPorPlan> listCantidadDeCodigosPorPlan = planesPorEmpresaService.getlistCodeByPlan(documentoEmpresa);
+            res.setDescription("Cantidad de codigos resueltos");
+            res.setCodigoRespuesta(200);
+            res.setListCantidadDeCodigosPorPlan(listCantidadDeCodigosPorPlan);
+        } catch (ErrorGeneral e ) {
+            res.setCodigoRespuesta(e.getStatusCode());
+            res.setDescription(e.getMessage());
+        }
+        LOG.info("RESPONSE from: /getlistCodeByPlan, codigo: " + res.getCodigoRespuesta());
         return res;
     }
 
@@ -387,7 +425,14 @@ public class MainController {
      */
     @RequestMapping(value = { "/listar_convenio_empresas" }, method = RequestMethod.GET)
     public String listarConvenioEmpresasRedireccion(ModelMap model) {
+
         return "listar_empresas_convenio";
+    }
+
+    @RequestMapping(value = { "/vista_empresa" }, method = RequestMethod.GET)
+    public String vistaEmpresaRedireccion(ModelMap model) {
+
+        return "vista_empresa";
     }
 
     /**
@@ -513,6 +558,25 @@ public class MainController {
         return res;
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/obtenerVistaEmpresa", method = RequestMethod.GET)
+    public ObtenerConvenioAfiliadosRs obtenerConvenioAfiliados(@Context HttpServletRequest request, @RequestHeader(value = "user") String usuario,
+                                                               @RequestHeader(value = "sessionToken") String token) throws ServletRequestBindingException {
+        LOG.info("REQUEST to: /obtenerVistaEmpresa to " + usuario );
+        ObtenerConvenioAfiliadosRs res = new ObtenerConvenioAfiliadosRs();
+        try {
+            res = empresaService.vistaEmpresa(usuario);
+        } catch (Exception e) {
+            String errorMsg = "Error en Controlador, al realizar la petición obtenerConvenioEmpresas." + "\n";
+            LOG.error(errorMsg + e.toString(), e);
+            res.setCodigoRespuesta(CONSUMO_ERROR);
+            res.setCodigoError(ERROR_GENERICO);
+            res.setFechaRespuesta(new Date());
+        }
+        LOG.info("RESPONSE from: /obtenerVistaEmpresa to " + usuario + ", codigo: " + res.getCodigoRespuesta());
+        return res;
+    }
     /**
      * Metodo que permite obtener los afiliados pertenecientes a una empresa dando un rango de fechas a cada afiliado se le asignan los
      * repectivos codigos asignados

@@ -12,6 +12,7 @@
 		vm.tarifas = {};
 		vm.formData = {};
 		vm.bottomImport = {};
+		vm.listCodeByPlan=[];
 		vm.afiliadoSelected = null;
 		vm.logout = logout;
 		vm.downloadDoc = downloadDoc;
@@ -21,7 +22,8 @@
 		vm.assignAfiliado = assignAfiliado;
 		vm.deleteAfiliado = deleteAfiliado;
 		vm.clickImport = clickImport;
-
+		vm.clickPaginatorListCode = clickPaginatorListCode;
+		vm.getlistCodeByPlan = getlistCodeByPlan;
 		onInit();
 
 		function onInit() {
@@ -33,9 +35,18 @@
 		function logout() {
 			adminService.logout();
 		}
-		
+		function getlistCodeByPlan(){
+			adminService.getlistCodeByPlan(vm.dataCompany.id)
+				.then(function(response) {
+					if (response.codigoRespuesta ===200){
+						vm.listCodeByPlan =response.listCantidadDeCodigosPorPlan;
+					} else {
+						console.error("result service",response);
+					}
+
+				});
+		}
 		function assignAfiliado(item, codigoAsignado){
-			//vm.afiliadoSelected = Object.assign({}, item);
 			vm.afiliadoSelected = item;
 			vm.afiliadoSelected.codigoAsignado = codigoAsignado;
 		}
@@ -154,6 +165,10 @@
 		function clickImport() {
 			vm.bottomImport.active = false;
 			vm.bottomImport.value = "Cargando ...";
+		}
+
+		function clickPaginatorListCode() {
+			console.info("click en paginator")
 		}
 	}
 })();

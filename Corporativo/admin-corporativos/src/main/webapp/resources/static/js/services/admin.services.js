@@ -31,6 +31,7 @@
 		self.logout = logout;
 		self.getAddress = getAddress;
 		self.goPath = goPath;
+		self.getVistaEmpresa = getVistaEmpresa;
 
 		/**
 		 * Metodos del modulo empresas con convenio de precios 39 - 49 - 59
@@ -45,6 +46,7 @@
 		self.asignarPlanAEmpresa = asignarPlanAEmpresa;
 		self.deleteAfiliadoById = deleteAfiliadoById;
 		self.getPlanByEmpresa = getPlanByEmpresa;
+		self.getlistCodeByPlan = getlistCodeByPlan;
 
 		/**
 		 * Funcion que retorna el contexto de la direccion
@@ -364,9 +366,7 @@
 		function getEmpresasConvenio(numberPage) {
 			var deferred = $q.defer();
 			var config = getConfig();
-				console.info('ENTRO getEmpresasConvenio');
-				if (!storageProvider.getVar('getEmpresasConvenio')) {
-				$http.get(address + 'obtenerConvenioEmpresas', config).then(function (response) {
+			$http.get(address + 'obtenerConvenioEmpresas', config).then(function (response) {
 					if (response.status == 200) {
 						if (response.data.codigoRespuesta == "403") {
 							logout();
@@ -379,12 +379,30 @@
 					}
 				}, function (error) {
 					deferred.reject('Error obteniendo empresas');
-				});
-			} else {
-				deferred.resolve(storageProvider.getVar('getEmpresasConvenio'));
-			}
+			});
+
 
 			return deferred.promise;
+		}
+
+		function getlistCodeByPlan(documentoEmpresa) {
+			var deferred = $q.defer();
+			var config = getConfig();
+			$http.get(address +  'getlistCodeByPlan/'+documentoEmpresa, config).then(function (response) {
+				if (response.status == 200) {
+					if (response.data.codigoRespuesta == "403") {
+						logout();
+					} else {
+						deferred.resolve(response.data);
+					}
+				} else {
+					deferred.reject('Error obteniendo afiliados');
+				}
+			}, function (error) {
+				deferred.reject('Error obteniendo afiliados');
+			});
+			return deferred.promise;
+
 		}
 
 		/**
@@ -401,6 +419,8 @@
 			var url = createUrlGetAfiliados(tipo, id, membresiaId, startDate, endDate);
 			return getAfiliadosEmpresaConvenioUrl(url);
 		}
+
+
 
 		/**
 		 * Funcion que conulta una lista de afiliados por rango de
@@ -427,6 +447,26 @@
 			var config = getConfig();
 
 			$http.get(address + url, config).then(function (response) {
+				if (response.status == 200) {
+					if (response.data.codigoRespuesta == "403") {
+						logout();
+					} else {
+						deferred.resolve(response.data);
+					}
+				} else {
+					deferred.reject('Error obteniendo afiliados');
+				}
+			}, function (error) {
+				deferred.reject('Error obteniendo afiliados');
+			});
+			return deferred.promise;
+		}
+
+		function getVistaEmpresa() {
+			var deferred = $q.defer();
+			var config = getConfig();
+
+			$http.get(address + '/obtenerVistaEmpresa', config).then(function (response) {
 				if (response.status == 200) {
 					if (response.data.codigoRespuesta == "403") {
 						logout();
@@ -470,7 +510,8 @@
 		{
 			var deferred = $q.defer();
 			var config = getConfig();
-			$http.get(address + 'getInformationInitialToCreateCompany', config).then(function (response) {
+			const userName=config.headers['user'];
+			$http.get(address + `getInformationInitialToCreateCompany/${userName}`, config).then(function (response) {
 				if (response.status == 200) {
 					if (response.data.codigoRespuesta != "200") {
 						logout();

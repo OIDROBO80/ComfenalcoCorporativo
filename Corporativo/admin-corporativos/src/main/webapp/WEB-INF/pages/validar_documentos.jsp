@@ -59,7 +59,7 @@
                 <ol class="breadcrumb section-menu" style="display: flex;justify-content: center;">
                     <li class="active"><a href="/Admin/crear_convenio_empresa">Crear Empresa</a></li>
                     <li><a href="/Admin/listar_convenio_empresas">Listar Empresas</a></li>
-                    <li><a>Validar</a></li>
+                    <!--li><a>Validar</a></li-->
                 </ol>
             </div>
         </div>

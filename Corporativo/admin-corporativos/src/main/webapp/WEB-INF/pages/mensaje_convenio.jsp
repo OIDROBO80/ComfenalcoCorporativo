@@ -51,7 +51,7 @@
 					<ol class="breadcrumb section-menu">
 						<li class="active" ng-click="adminCtrl.changeView('crear_convenio_empresa')"><a>Crear Empresa</a></li>
 						<li><a ng-click="adminCtrl.changeView('listar_convenio_empresas')">Listar Empresas</a></li>
-						<li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li>
+						<!--li><a ng-click="adminCtrl.changeView('validar_documentos')">Validar</a></li-->
 					</ol>
 				</div>
 			</div>
@@ -67,7 +67,7 @@
 					Empresas</a>
 			</p>
 
-			<label>Se han realizado {{adminCtrl.tableSuccess.length}} registros y han fallado {{adminCtrl.tableFallidos.length}}.</label>
+			<label ng-if="adminCtrl.tableSuccess.length>0">Se han realizado {{adminCtrl.tableSuccess.length}} registros y han fallado {{adminCtrl.tableFallidos.length}}.</label>
 			<br>
 			<label class="titleEmployees title-margin" data-ng-if="adminCtrl.tableFallidos.length > 0">
 				Registros fallidos
